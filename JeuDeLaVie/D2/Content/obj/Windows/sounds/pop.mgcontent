@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SourceFile>F:/2/JeuDeLaVie/D2/Content/sounds/pop.wav</SourceFile>
+  <SourceTime>2018-11-29T14:10:47.6590939-05:00</SourceTime>
+  <DestFile>F:/2/JeuDeLaVie/D2/Content/bin/Windows/sounds/pop.xnb</DestFile>
+  <DestTime>2020-03-11T20:54:26.7994255-04:00</DestTime>
+  <Importer>WavImporter</Importer>
+  <ImporterTime>2018-12-08T11:35:54-05:00</ImporterTime>
+  <Processor>SoundEffectProcessor</Processor>
+  <ProcessorTime>2018-12-08T11:35:54-05:00</ProcessorTime>
+  <Parameters>
+    <Key>Quality</Key>
+    <Value>Best</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>
