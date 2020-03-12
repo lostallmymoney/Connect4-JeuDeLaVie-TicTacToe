@@ -1,9 +1,0 @@
-F:\JeuDeLaVie\JeuDeLaVieConsole\bin\Release\JeuDeLaVieConsole.exe.config
-F:\JeuDeLaVie\JeuDeLaVieConsole\bin\Release\JeuDeLaVieConsole.exe
-F:\JeuDeLaVie\JeuDeLaVieConsole\bin\Release\JeuDeLaVieConsole.pdb
-F:\JeuDeLaVie\JeuDeLaVieConsole\bin\Release\JeuDeLaVie.dll
-F:\JeuDeLaVie\JeuDeLaVieConsole\bin\Release\JeuDeLaVie.pdb
-F:\JeuDeLaVie\JeuDeLaVieConsole\obj\Release\JeuDeLaVieConsole.csprojAssemblyReference.cache
-F:\JeuDeLaVie\JeuDeLaVieConsole\obj\Release\JeuDeLaVieConsole.csproj.CopyComplete
-F:\JeuDeLaVie\JeuDeLaVieConsole\obj\Release\JeuDeLaVieConsole.exe
-F:\JeuDeLaVie\JeuDeLaVieConsole\obj\Release\JeuDeLaVieConsole.pdb
