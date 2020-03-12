@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayGPS.cs" />
     <Compile Include="JeuDeLaVie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

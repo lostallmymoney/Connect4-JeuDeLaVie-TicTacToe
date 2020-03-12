@@ -1,8 +1,0 @@
-Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"F:/2/JeuDeLaVie/D2/Content/File.spritefont","F:/2/JeuDeLaVie/D2/Content/bin/Windows/daFont.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21521,0.2306394
-"F:/2/JeuDeLaVie/D2/Content/sounds/lasagna.wav","F:/2/JeuDeLaVie/D2/Content/bin/Windows/sounds/lasagna.xnb","SoundEffectProcessor","SoundEffectContent",23736398,23736425,0.4439189
-"F:/2/JeuDeLaVie/D2/Content/sounds/pop.wav","F:/2/JeuDeLaVie/D2/Content/bin/Windows/sounds/pop.xnb","SoundEffectProcessor","SoundEffectContent",40322,40277,0.1220161
-"F:/2/JeuDeLaVie/D2/Content/sounds/punch.wav","F:/2/JeuDeLaVie/D2/Content/bin/Windows/sounds/punch.xnb","SoundEffectProcessor","SoundEffectContent",73486,73441,0.1230079
-"F:/2/JeuDeLaVie/D2/Content/sprites/background.png","F:/2/JeuDeLaVie/D2/Content/bin/Windows/sprites/background.xnb","TextureProcessor","Texture2DContent",375779,8294485,0.2450236
-"F:/2/JeuDeLaVie/D2/Content/sprites/pepe2.png","F:/2/JeuDeLaVie/D2/Content/bin/Windows/sprites/pepe2.xnb","TextureProcessor","Texture2DContent",68550,2648625,0.0818397
-"F:/2/JeuDeLaVie/D2/Content/sprites/redpepe.png","F:/2/JeuDeLaVie/D2/Content/bin/Windows/sprites/redpepe.xnb","TextureProcessor","Texture2DContent",74010,2648625,0.0768797
