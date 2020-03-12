@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Threading;
+using System.Windows.Forms;
+using JeuDeLaVie;
 
 namespace D22
 {
@@ -31,6 +33,10 @@ namespace D22
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            InactiveSleepTime = new System.TimeSpan(0);
+
+            
+
             this.IsMouseVisible = true;
             this.graphics.PreferredBackBufferWidth = 2 * windowSizeX;
             this.graphics.PreferredBackBufferHeight = 2 * windowSizeY;
@@ -75,8 +81,6 @@ namespace D22
             thread1 = new Thread(TheThread);
             thread1.Priority = ThreadPriority.Highest;
             thread1.Start();
-
-            JeuDeLaVie.JeuDeLaVieTable.Instance.setBooleanTables();
             TheThread2();
             base.Update(gameTime);
         }
@@ -96,17 +100,17 @@ namespace D22
                     y++;
                 }
 
-                if (JeuDeLaVie.JeuDeLaVieTable.Instance.TablesDisplayB[x, y, 1])
+                if (JeuDeLaVie.JeuDeLaVieTable.Instance.TableauDeLaVie[x, y, ArrayGPS.Instance.GetSwapTablesNewB()])
                 {
                     donneeTables[i] = Color.Black;
-                    if (!JeuDeLaVie.JeuDeLaVieTable.Instance.TablesDisplayB[x, y, 0])
+                    if (!JeuDeLaVie.JeuDeLaVieTable.Instance.TableauDeLaVie[x, y, ArrayGPS.Instance.GetSwapTablesOldB()])
                     {
                         donneeTables[i] = Color.DarkGreen;
                     }
                 }
                 else
                 {
-                    if (JeuDeLaVie.JeuDeLaVieTable.Instance.TablesDisplayB[x, y, 0])
+                    if (JeuDeLaVie.JeuDeLaVieTable.Instance.TableauDeLaVie[x, y, ArrayGPS.Instance.GetSwapTablesOldB()])
                     {
                         donneeTables[i] = Color.DarkRed;
                     }

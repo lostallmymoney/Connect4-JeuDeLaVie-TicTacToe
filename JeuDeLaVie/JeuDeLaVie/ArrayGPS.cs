@@ -6,55 +6,67 @@ using System.Threading.Tasks;
 
 namespace JeuDeLaVie
 {
-    static class ArrayGPS
+    public class ArrayGPS
     {
+        public static ArrayGPS ArrayGPSInstance;
+        public static ArrayGPS Instance
+        {
+            get
+            {
+                if (ArrayGPSInstance == null)
+                    ArrayGPSInstance = new ArrayGPS();
+                return ArrayGPSInstance;
+            }
+        }
+
+
         private static int swapTablesNew = 1, swapTablesOld = 0, swapTablesNewB = 1, swapTablesOldB = 0, cMem;
 
-        public static void BackupTablesNumbers()
+        public void BackupTablesNumbers()
         {
             swapTablesNewB = swapTablesNew;
             swapTablesOldB = swapTablesOld;
         }
 
-        public static int GetCellMemmory()
+        public int GetCellMemmory()
         {
             return cMem;
         }
 
-        public static int GetSwapTablesNew()
+        public int GetSwapTablesNew()
         {
             return swapTablesNew;
         }
 
-        public static int GetSwapTablesOld()
+        public int GetSwapTablesOld()
         {
             return swapTablesOld;
         }
 
-        public static int GetSwapTablesNewB()
+        public int GetSwapTablesNewB()
         {
             return swapTablesNewB;
         }
 
-        public static int GetSwapTablesOldB()
+        public int GetSwapTablesOldB()
         {
             return swapTablesOldB;
         }
 
-        public static void cycleAdd()
+        public void cycleAdd()
         {
             swapTablesOld = (swapTablesOld >= cMem - 1) ? 0 : swapTablesOld + 1;
             swapTablesNew = (swapTablesNew >= cMem - 1) ? 0 : swapTablesNew + 1;
         }
 
-        public static void cycleReset(int cycleMemory)
+        public void cycleReset(int cycleMemory)
         {
             swapTablesNew = 1;
             swapTablesOld = 0;
             cMem = cycleMemory;
         }
 
-        public static int cycleEmulateNew()
+        public int cycleEmulateNew()
         {
             return (swapTablesNew >= cMem - 1) ? 0 : swapTablesNew + 1;
         }
