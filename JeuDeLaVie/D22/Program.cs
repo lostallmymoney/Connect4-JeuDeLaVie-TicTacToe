@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 namespace D22
 {
@@ -14,7 +15,9 @@ namespace D22
         static void Main()
         {
             using (var game = new Game1())
+            {
                 game.Run();
+            }
         }
     }
 }

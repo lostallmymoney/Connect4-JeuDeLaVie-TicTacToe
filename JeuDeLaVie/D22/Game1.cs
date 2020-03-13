@@ -2,8 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Threading;
-using System.Windows.Forms;
 using JeuDeLaVie;
+using System.Diagnostics;
+using System.Windows.Forms;
+using System;
 
 namespace D22
 {
@@ -15,31 +17,29 @@ namespace D22
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D blackRectangle;
-        Texture2D whiteRectangle;
         Texture2D rectTexture;
         SpriteFont font;
         Thread thread1;
-        int staleWaitTime = 500, windowSizeX = 800, windowSizeY = 450;
+        int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         Color[] donneeTables;
         public Game1()
         {
-            //Content.RootDirectory = "Content";
+            this.IsMouseVisible = true;
             this.Window.AllowUserResizing = false;
+            
+            //Content.RootDirectory = "Content";
             graphics = new GraphicsDeviceManager(this);
             IsFixedTimeStep = false;
+            //vsync
             graphics.SynchronizeWithVerticalRetrace = false;
+        }       
 
-        }
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             InactiveSleepTime = new System.TimeSpan(0);
-
             
-
-            this.IsMouseVisible = true;
-            this.graphics.PreferredBackBufferWidth = 2 * windowSizeX;
-            this.graphics.PreferredBackBufferHeight = 2 * windowSizeY;
+            this.graphics.PreferredBackBufferWidth = windowSizeX;
+            this.graphics.PreferredBackBufferHeight = windowSizeY;
             this.graphics.ApplyChanges();
             base.Initialize();
         }
@@ -53,20 +53,20 @@ namespace D22
             blackRectangle.SetData(new[] { Color.Black });
 
             font = Content.Load<SpriteFont>("daFont");
-            whiteRectangle = new Texture2D(GraphicsDevice, 1, 1);
-            whiteRectangle.SetData(new[] { Color.White });
 
             JeuDeLaVie.JeuDeLaVieTable.Instance.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
+
         }
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
+
         protected override void Update(GameTime gameTime)
         {
-            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
-            //    Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+                Exit();
 
             if (JeuDeLaVie.JeuDeLaVieTable.Instance.Stale)
             {
@@ -119,7 +119,7 @@ namespace D22
             rectTexture.SetData(donneeTables);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            spriteBatch.Draw(rectTexture, new Vector2(0, 0), color: Color.White, scale: new Vector2(2f));
+            spriteBatch.Draw(rectTexture, new Vector2(0, 0), color: Color.White, scale: new Vector2(1f));
             spriteBatch.End();
         }
     }
