@@ -19,11 +19,14 @@ namespace D22
         Texture2D blackRectangle;
         Texture2D rectTexture;
         SpriteFont font;
-        Thread thread1, thread2;
+        Thread thread1;
+        bool sideMenu = false;
         int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         Color[] donneeTables;
+        FPSCounter FpsCounter;
         public Game1()
         {
+
             this.IsMouseVisible = true;
             this.Window.AllowUserResizing = false;
 
@@ -32,6 +35,9 @@ namespace D22
             IsFixedTimeStep = false;
             //vsync
             graphics.SynchronizeWithVerticalRetrace = false;
+
+            //fpsCount
+            FpsCounter = new FPSCounter();
         }
 
         protected override void Initialize()
@@ -54,7 +60,7 @@ namespace D22
 
             font = Content.Load<SpriteFont>("daFont");
 
-            JeuDeLaVie.JeuDeLaVieTable.Instance.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
+            JeuDeLaVie.JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
 
         }
         protected override void UnloadContent()
@@ -73,53 +79,132 @@ namespace D22
                 thread1.Join();
             }
 
-            if (JeuDeLaVie.JeuDeLaVieTable.Instance.Stale)
+            if (JeuDeLaVie.JeuDeLaVieTable.Stale)
             {
                 Thread.Sleep(staleWaitTime);
-                JeuDeLaVie.JeuDeLaVieTable.Instance.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
+                JeuDeLaVie.JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
             }
 
-            thread1 = new Thread(JeuDeLaVie.JeuDeLaVieTable.Instance.CalculerCycle)
+            thread1 = new Thread(JeuDeLaVie.JeuDeLaVieTable.CalculerCycle)
             {
                 Priority = ThreadPriority.Highest
             };
             thread1.Start();
 
-            TheThread2();
+            if (Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
+            {
+                sideMenu = sideMenu ? false : true;
+                if (sideMenu)
+                {
+                    this.graphics.PreferredBackBufferWidth = 50 + windowSizeX;
+                    rectTexture = new Texture2D(GraphicsDevice, windowSizeX + 50, windowSizeY);
+                    this.graphics.ApplyChanges();
+                }
+                else
+                {
+                    this.graphics.PreferredBackBufferWidth = windowSizeX;
+                    rectTexture = new Texture2D(GraphicsDevice, windowSizeX, windowSizeY);
+                    this.graphics.ApplyChanges();
+                }
+            }
+
+            DrawThread();
+            FpsCounter.add((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 
-        private void TheThread2()
+        private void DrawThread()
         {
-            donneeTables = new Color[windowSizeX * windowSizeY];
-            for (int i = 0, x = 0, y = 0; i < donneeTables.Length; i++, x++)
+            if (sideMenu)
             {
-                if (x == windowSizeX)
-                {
-                    x = 0;
-                    y++;
-                }
+                donneeTables = new Color[(50+windowSizeX) * windowSizeY];
+            }
+            else
+            {
+                donneeTables = new Color[windowSizeX * windowSizeY];
+            }
 
-                if (JeuDeLaVie.JeuDeLaVieTable.Instance.TableauDeLaVie[x, y, ArrayGPS.Instance.GetSwapTablesNewB()])
+            for (int i = 0, x = 0, y=0, tableX = 0, tableY = 0; i < donneeTables.Length; i++, x++)
+            {
+                if (sideMenu)
                 {
-                    donneeTables[i] = Color.Black;
-                    if (!JeuDeLaVie.JeuDeLaVieTable.Instance.TableauDeLaVie[x, y, ArrayGPS.Instance.GetSwapTablesOldB()])
+                    if (x > windowSizeX)
                     {
-                        donneeTables[i] = Color.DarkGreen;
+                        
+                    }
+                    else
+                    {
+                        if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesNewB()])
+                        {
+                            if (!JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                            {
+                                donneeTables[i] = Color.DarkGreen;
+                            }
+                            else
+                            {
+                                donneeTables[i] = Color.Black;
+                            }
+                        }
+                        else
+                        {
+                            if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                            {
+                                donneeTables[i] = Color.DarkRed;
+                            }
+                        }
+                        tableX++;
+                        if (tableX >= windowSizeX)
+                        {
+                            tableX = 0;
+                        }
+                    }
+                    if (x >= windowSizeX + 50)
+                    {
+                        x = 0;
+                        tableY++;
+                        y++;
                     }
                 }
                 else
                 {
-                    if (JeuDeLaVie.JeuDeLaVieTable.Instance.TableauDeLaVie[x, y, ArrayGPS.Instance.GetSwapTablesOldB()])
+                    if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesNewB()])
                     {
-                        donneeTables[i] = Color.DarkRed;
+                        if (!JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                        {
+                            donneeTables[i] = Color.DarkGreen;
+                        }
+                        else
+                        {
+                            donneeTables[i] = Color.Black;
+                        }
+                    }
+                    else
+                    {
+                        if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                        {
+                            donneeTables[i] = Color.DarkRed;
+                        }
+                    }
+                    tableX++;
+                    if (tableX == windowSizeX)
+                    {
+                        tableX = 0;
+                        tableY++;
                     }
                 }
             }
             rectTexture.SetData(donneeTables);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            spriteBatch.Draw(rectTexture, new Vector2(0, 0), color: Color.White, scale: new Vector2(1f));
+
+            if (sideMenu)
+            {
+                if (FpsCounter.FPSTotal >= FpsCounter.NbFrameCount)
+                    spriteBatch.DrawString(font, "FPS" + Environment.NewLine + FpsCounter.avgFPS, new Vector2(windowSizeX + 6, 30), Color.Black);
+                spriteBatch.DrawString(font, "1FPS" + Environment.NewLine + FpsCounter.CurrentFPS, new Vector2(windowSizeX + 6, 70), Color.Black);
+            }
+                spriteBatch.Draw(rectTexture, new Vector2(0, 0), color: Color.White, scale: new Vector2(1f));
             spriteBatch.End();
         }
     }

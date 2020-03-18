@@ -1,7 +1,5 @@
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\JeuDeLaVie.dll
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\JeuDeLaVie.pdb
-F:\2\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVie.dll
-F:\2\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVie.pdb
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\MonoGame.Framework.dll
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\SharpDX.DXGI.dll
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\SharpDX.dll
@@ -17,3 +15,6 @@ F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\SharpDX.MediaFoundation.xml
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\SharpDX.Direct2D1.xml
 F:\2\JeuDeLaVie\JeuDeLaVie\bin\Debug\SharpDX.XAudio2.xml
 F:\2\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVieClasses.csproj.CopyComplete
+F:\2\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVie.dll
+F:\2\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVie.pdb
+F:\2\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVieClasses.csprojAssemblyReference.cache

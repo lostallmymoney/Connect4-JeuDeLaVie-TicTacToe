@@ -1,3 +1,3 @@
 git add .
-git commit -m "better faster stronger"
+git commit -m "void"
 git push origin master
