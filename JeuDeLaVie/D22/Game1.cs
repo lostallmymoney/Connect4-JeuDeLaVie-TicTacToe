@@ -19,20 +19,20 @@ namespace D22
         Texture2D blackRectangle;
         Texture2D rectTexture;
         SpriteFont font;
-        Thread thread1;
+        Thread thread1, thread2;
         int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         Color[] donneeTables;
         public Game1()
         {
             this.IsMouseVisible = true;
             this.Window.AllowUserResizing = false;
-            
+
             //Content.RootDirectory = "Content";
             graphics = new GraphicsDeviceManager(this);
             IsFixedTimeStep = false;
             //vsync
             graphics.SynchronizeWithVerticalRetrace = false;
-        }       
+        }
 
         protected override void Initialize()
         {
@@ -68,28 +68,28 @@ namespace D22
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 Exit();
 
+            if (thread1 != null && thread1.IsAlive)
+            {
+                thread1.Join();
+            }
+
             if (JeuDeLaVie.JeuDeLaVieTable.Instance.Stale)
             {
                 Thread.Sleep(staleWaitTime);
                 JeuDeLaVie.JeuDeLaVieTable.Instance.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
             }
 
-            while (thread1 != null && thread1.IsAlive)
+            thread1 = new Thread(JeuDeLaVie.JeuDeLaVieTable.Instance.CalculerCycle)
             {
-                Thread.Sleep(2);
-            }
-            thread1 = new Thread(TheThread);
-            thread1.Priority = ThreadPriority.Highest;
+                Priority = ThreadPriority.Highest
+            };
             thread1.Start();
+
             TheThread2();
             base.Update(gameTime);
         }
 
-        protected void TheThread()
-        {
-            JeuDeLaVie.JeuDeLaVieTable.Instance.CalculerCycle();
-        }
-        protected void TheThread2()
+        private void TheThread2()
         {
             donneeTables = new Color[windowSizeX * windowSizeY];
             for (int i = 0, x = 0, y = 0; i < donneeTables.Length; i++, x++)

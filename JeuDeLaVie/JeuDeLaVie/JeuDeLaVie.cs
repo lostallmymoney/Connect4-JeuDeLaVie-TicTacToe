@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Text;
 using System.Threading;
 
@@ -20,6 +21,7 @@ namespace JeuDeLaVie
         private static bool stale = false;
         private static int cycleSummary = 0;
         private static int nbCells;
+        private static int threadsFinished = 0;
 
         private static bool[,,] tableauDeLaVie;
         private int[] cycleSummaries;
@@ -121,46 +123,6 @@ namespace JeuDeLaVie
             }
         }
 
-        //divide by 2 thread
-        public void CalculerCycleThread1()
-        {
-            bool yMax, yZero;
-            for (int y = 0; tailleY / 2 > y; y++)
-            {
-                int cycleXRowSummary = 0;
-                yMax = (y == tailleY - 1);
-                yZero = (y == 0);
-                for (int x = 0; x < tailleX; x++)
-                {
-                    if (TestCell(x, y, yMax, (x == tailleX - 1), yZero, (x == 0)))
-                    {
-                        cycleSummary++;
-                        cycleXRowSummary++;
-                    }
-                }
-                cycleRowSummaries[ArrayGPS.Instance.GetSwapTablesNew(), y] = cycleXRowSummary;
-            }
-        }
-        //divide by 2 thread
-        public void CalculerCycleThread2()
-        {
-            bool yMax, yZero;
-            for (int y = tailleY / 2; y < tailleY; y++)
-            {
-                int cycleXRowSummary = 0;
-                yMax = (y == tailleY - 1);
-                yZero = (y == 0);
-                for (int x = 0; x < tailleX; x++)
-                {
-                    if (TestCell(x, y, yMax, (x == tailleX - 1), yZero, (x == 0)))
-                    {
-                        cycleSummary++;
-                        cycleXRowSummary++;
-                    }
-                }
-                cycleRowSummaries[ArrayGPS.Instance.GetSwapTablesNew(), y] = cycleXRowSummary;
-            }
-        }
 
         private bool TestCell(int x, int y, bool yMax, bool xMax, bool yZero, bool xZero)
         {
@@ -327,9 +289,9 @@ namespace JeuDeLaVie
             //thread calcule old
             ArrayGPS.Instance.BackupTablesNumbers();
             
-            while (staleThread != null && staleThread.IsAlive)
+            if (staleThread != null && staleThread.IsAlive)
             {
-                Thread.Sleep(2);
+                staleThread.Join();
             }
 
             staleThread = new Thread(staleTestThreadF);
@@ -342,16 +304,59 @@ namespace JeuDeLaVie
 
             nbCells = tailleX * tailleY;
             cycleSummary = 0;
+            threadsFinished = 0;
             //calcule le nombre de cellule adjascent
-            thread1 = new Thread(CalculerCycleThread1);
+            //divide by 2 thread
+            thread1 = new Thread(() =>
+            {
+                bool yMax, yZero;
+                for (int y = 0; tailleY / 2 > y; y++)
+                {
+                    int cycleXRowSummary = 0;
+                    yMax = (y == tailleY - 1);
+                    yZero = (y == 0);
+                    for (int x = 0; x < tailleX; x++)
+                    {
+                        if (TestCell(x, y, yMax, (x == tailleX - 1), yZero, (x == 0)))
+                        {
+                            cycleSummary++;
+                            cycleXRowSummary++;
+                        }
+                    }
+                    cycleRowSummaries[ArrayGPS.Instance.GetSwapTablesNew(), y] = cycleXRowSummary;
+                }
+            });
             thread1.Priority = ThreadPriority.Highest;
             thread1.Start();
-            thread2 = new Thread(CalculerCycleThread2);
+            thread2 = new Thread(() =>
+            {
+                bool yMax, yZero;
+                for (int y = tailleY / 2; y < tailleY; y++)
+                {
+                    int cycleXRowSummary = 0;
+                    yMax = (y == tailleY - 1);
+                    yZero = (y == 0);
+                    for (int x = 0; x < tailleX; x++)
+                    {
+                        if (TestCell(x, y, yMax, (x == tailleX - 1), yZero, (x == 0)))
+                        {
+                            cycleSummary++;
+                            cycleXRowSummary++;
+                        }
+                    }
+                    cycleRowSummaries[ArrayGPS.Instance.GetSwapTablesNew(), y] = cycleXRowSummary;
+                }
+            });
             thread2.Priority = ThreadPriority.Highest;
             thread2.Start();
-            while (thread1.IsAlive || thread2.IsAlive)
+
+            if (thread1 != null && thread1.IsAlive)
             {
-                Thread.Sleep(2);
+                thread1.Join();
+            }
+            if (thread2 != null && thread2.IsAlive)
+            {
+                thread2.Join();
             }
             //look up the cycle summaries in case there's a match
             cycleSummaries[ArrayGPS.Instance.GetSwapTablesNew()] = cycleSummary;

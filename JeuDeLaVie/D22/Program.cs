@@ -10,11 +10,11 @@ namespace D22
     {
         /// <summary>
         /// The main entry point for the application.
-        /// </summary>
+        /// </summary
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            using (var game = new Game1())
+            using (Game1 game = new Game1())
             {
                 game.Run();
             }
