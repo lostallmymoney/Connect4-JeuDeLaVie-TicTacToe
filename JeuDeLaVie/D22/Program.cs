@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace D22
 {
@@ -17,13 +16,13 @@ namespace D22
             Game1 game = null;
             try
             {
-                System.Environment.SetEnvironmentVariable("FNA_AUDIO_DISABLE_SOUND", "1");
+                Environment.SetEnvironmentVariable("FNA_AUDIO_DISABLE_SOUND", "1");
                 game = new Game1();
             }
             catch (Exception e)
             {
-                System.Console.WriteLine("Exeption 2.");
-                Console.WriteLine(e.ToString());
+                Console.WriteLine("Exeption 2.");
+                Console.WriteLine(e);
             }
 
             if (game != null)

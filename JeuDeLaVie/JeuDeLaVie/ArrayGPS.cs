@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JeuDeLaVie
+﻿namespace JeuDeLaVie
 {
-    public class ArrayGPS
+    public static class ArrayGPS
     {
         private static int swapTablesNew = 1, swapTablesOld = 0, swapTablesNewB = 1, swapTablesOldB = 0, cMem;
 
@@ -41,24 +35,25 @@ namespace JeuDeLaVie
             return swapTablesOldB;
         }
 
-        public static void cycleAdd()
+        public static void CycleAdd()
         {
             swapTablesOld = (swapTablesOld >= cMem - 1) ? 0 : swapTablesOld + 1;
             swapTablesNew = (swapTablesNew >= cMem - 1) ? 0 : swapTablesNew + 1;
         }
 
-        public static void cycleReset(int cycleMemory)
+        public static void CycleReset(int cycleMemory)
         {
             swapTablesNew = 1;
             swapTablesOld = 0;
             cMem = cycleMemory;
         }
 
-        public static int cycleEmulateNew()
+        public static int CycleEmulateNew()
         {
             return (swapTablesNewB >= cMem - 1) ? 0 : swapTablesNewB + 1;
         }
-        public static int cycleEmulateOld()
+
+        public static int CycleEmulateOld()
         {
             return (swapTablesOldB >= cMem - 1) ? 0 : swapTablesOldB + 1;
         }

@@ -1,11 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using System;
 using System.Threading;
 using JeuDeLaVie;
-using System.Diagnostics;
-using System.Windows.Forms;
-using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace D22
 {
@@ -14,21 +12,20 @@ namespace D22
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Texture2D blackRectangle;
-        Texture2D rectTexture;
-        SpriteFont font;
-        Thread thread1;
-        bool sideMenu = false;
-        int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
-        Color[] donneeTables;
-        FPSCounter FpsCounter;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private Texture2D blackRectangle, rectTexture;
+        private SpriteFont font;
+        private Thread thread1;
+        private bool sideMenu;
+        protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
+        private Color[] donneeTables;
+        private FPSCounter FpsCounter;
         public Game1()
         {
 
-            this.IsMouseVisible = true;
-            this.Window.AllowUserResizing = false;
+            IsMouseVisible = true;
+            Window.AllowUserResizing = false;
 
             //Content.RootDirectory = "Content";
             graphics = new GraphicsDeviceManager(this);
@@ -42,14 +39,14 @@ namespace D22
 
         protected override void Initialize()
         {
-            InactiveSleepTime = new System.TimeSpan(0);
+            InactiveSleepTime = new TimeSpan(0);
             
-            this.graphics.PreferredBackBufferWidth = windowSizeX;
-            this.graphics.PreferredBackBufferHeight = windowSizeY;
-            this.graphics.ApplyChanges();
+            graphics.PreferredBackBufferWidth = windowSizeX;
+            graphics.PreferredBackBufferHeight = windowSizeY;
+            graphics.ApplyChanges();
             base.Initialize();
         }
-
+        
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -60,7 +57,7 @@ namespace D22
 
             font = Content.Load<SpriteFont>("daFont");
 
-            JeuDeLaVie.JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
+            JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
 
         }
         protected override void UnloadContent()
@@ -71,7 +68,7 @@ namespace D22
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == Microsoft.Xna.Framework.Input.ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             if (thread1 != null && thread1.IsAlive)
@@ -79,37 +76,37 @@ namespace D22
                 thread1.Join();
             }
 
-            if (JeuDeLaVie.JeuDeLaVieTable.Stale)
+            if (JeuDeLaVieTable.Stale)
             {
                 Thread.Sleep(staleWaitTime);
-                JeuDeLaVie.JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
+                JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
             }
 
-            thread1 = new Thread(JeuDeLaVie.JeuDeLaVieTable.CalculerCycle)
+            thread1 = new Thread(JeuDeLaVieTable.CalculerCycle)
             {
                 Priority = ThreadPriority.Highest
             };
             thread1.Start();
 
-            if (Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
+            if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
-                sideMenu = sideMenu ? false : true;
+                sideMenu = !sideMenu;
                 if (sideMenu)
                 {
-                    this.graphics.PreferredBackBufferWidth = 50 + windowSizeX;
+                    graphics.PreferredBackBufferWidth = 50 + windowSizeX;
                     rectTexture = new Texture2D(GraphicsDevice, windowSizeX + 50, windowSizeY);
-                    this.graphics.ApplyChanges();
+                    graphics.ApplyChanges();
                 }
                 else
                 {
-                    this.graphics.PreferredBackBufferWidth = windowSizeX;
+                    graphics.PreferredBackBufferWidth = windowSizeX;
                     rectTexture = new Texture2D(GraphicsDevice, windowSizeX, windowSizeY);
-                    this.graphics.ApplyChanges();
+                    graphics.ApplyChanges();
                 }
             }
 
             DrawThread();
-            FpsCounter.add((float)gameTime.ElapsedGameTime.TotalSeconds);
+            FpsCounter.Add((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 
@@ -134,9 +131,9 @@ namespace D22
                     }
                     else
                     {
-                        if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesNewB()])
+                        if (JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesNewB()])
                         {
-                            if (!JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                            if (!JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
                             {
                                 donneeTables[i] = Color.DarkGreen;
                             }
@@ -147,7 +144,7 @@ namespace D22
                         }
                         else
                         {
-                            if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                            if (JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
                             {
                                 donneeTables[i] = Color.DarkRed;
                             }
@@ -167,9 +164,9 @@ namespace D22
                 }
                 else
                 {
-                    if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesNewB()])
+                    if (JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesNewB()])
                     {
-                        if (!JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                        if (!JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
                         {
                             donneeTables[i] = Color.DarkGreen;
                         }
@@ -180,7 +177,7 @@ namespace D22
                     }
                     else
                     {
-                        if (JeuDeLaVie.JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
+                        if (JeuDeLaVieTable.TableauDeLaVie[tableX, tableY, ArrayGPS.GetSwapTablesOldB()])
                         {
                             donneeTables[i] = Color.DarkRed;
                         }
@@ -201,10 +198,10 @@ namespace D22
             if (sideMenu)
             {
                 if (FpsCounter.FPSTotal >= FpsCounter.NbFrameCount)
-                    spriteBatch.DrawString(font, "FPS" + Environment.NewLine + FpsCounter.avgFPS, new Vector2(windowSizeX + 6, 30), Color.Black);
+                    spriteBatch.DrawString(font, "FPS:" + Environment.NewLine + FpsCounter.AvgFPS, new Vector2(windowSizeX + 6, 30), Color.Black);
                 spriteBatch.DrawString(font, "1FPS" + Environment.NewLine + FpsCounter.CurrentFPS, new Vector2(windowSizeX + 6, 70), Color.Black);
             }
-                spriteBatch.Draw(rectTexture, new Vector2(0, 0), color: Color.White, scale: new Vector2(1f));
+                spriteBatch.Draw(rectTexture, new Vector2(0, 0), color: Color.White);
             spriteBatch.End();
         }
     }
