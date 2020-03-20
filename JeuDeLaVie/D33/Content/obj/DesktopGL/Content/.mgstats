@@ -1,0 +1,4 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"F:/2/22/JeuDeLaVie/D33/Content/daFont.xnb","F:/2/22/JeuDeLaVie/D33/Content/bin/DesktopGL/Content\daFont.xnb","CopyItem","File",21521,21521,0.0014881
+"F:/2/22/JeuDeLaVie/D33/Content/Textures/minus.png","F:/2/22/JeuDeLaVie/D33/Content/bin/DesktopGL/Content/Textures/minus.xnb","TextureProcessor","Texture2DContent",184,1685,0.1120957
+"F:/2/22/JeuDeLaVie/D33/Content/Textures/plus.png","F:/2/22/JeuDeLaVie/D33/Content/bin/DesktopGL/Content/Textures/plus.xnb","TextureProcessor","Texture2DContent",200,1685,0.0902718

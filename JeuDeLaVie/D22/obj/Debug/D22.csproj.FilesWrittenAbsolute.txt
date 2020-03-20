@@ -1,6 +1,0 @@
-/mnt/f/2/JeuDeLaVie/D22/obj/Debug/.NETFramework,Version=v4.7.2.AssemblyAttribute.cs
-/mnt/f/2/JeuDeLaVie/D22/obj/Debug/D22.Icon.ico
-/mnt/f/2/JeuDeLaVie/D22/obj/Debug/D22.Icon.bmp
-/mnt/f/2/JeuDeLaVie/D22/bin/DesktopGL/AnyCPU/Debug/MonoGame.Framework.dll
-/mnt/f/2/JeuDeLaVie/D22/bin/DesktopGL/AnyCPU/Debug/JeuDeLaVie.dll
-/mnt/f/2/JeuDeLaVie/D22/bin/DesktopGL/AnyCPU/Debug/JeuDeLaVie.pdb

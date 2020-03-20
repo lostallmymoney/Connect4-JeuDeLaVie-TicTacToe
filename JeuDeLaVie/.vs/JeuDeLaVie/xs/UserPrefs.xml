@@ -1,27 +1,27 @@
 ﻿<Properties StartupConfiguration="{18945386-1E18-4DD4-BF80-DE4B025AAD9B}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="JeuDeLaVie/JeuDeLaVie.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../../../../../../usr/lib/mono/msbuild/Current/bin/Microsoft.Common.CurrentVersion.targets">
     <Files>
-      <File FileName="D22/D22.csproj" Line="111" Column="14" />
-      <File FileName="JeuDeLaVie/ArrayGPS.cs" Line="2" Column="2" />
-      <File FileName="JeuDeLaVie/JeuDeLaVie.cs" Line="198" Column="31" />
-      <File FileName="D22/Game1.cs" Line="139" Column="19" />
+      <File FileName="D22/D22.csproj" Line="1" Column="1" />
+      <File FileName="JeuDeLaVie/ArrayGPS.cs" Line="27" Column="9" />
+      <File FileName="JeuDeLaVie/JeuDeLaVie.cs" Line="4" Column="1" />
+      <File FileName="D22/Game1.cs" Line="56" Column="58" />
       <File FileName="D22/Content/Content.mgcb" Line="1" Column="1" />
       <File FileName="JeuDeLaVie/FPSCounter.cs" Line="10" Column="10" />
       <File FileName="D22/Program.cs" Line="22" Column="32" />
-      <File FileName="../../../../../usr/lib/mono/xbuild/MonoGame/v3.0/Assemblies/DesktopGL/MonoGame.Framework.dll.config" Line="1" Column="1" />
       <File FileName="D22/app.manifest" Line="1" Column="1" />
       <File FileName="JeuDeLaVie/Properties/AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="../../../../../../usr/lib/mono/msbuild/15.0/bin/Microsoft.Common.CurrentVersion.targets" Line="2101" Column="5" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="JeuDeLaVie" expanded="True">
             <Node name="D22" expanded="True">
+              <Node name="References" expanded="True" selected="True" />
               <Node name="Content" expanded="True" />
             </Node>
             <Node name="JeuDeLaVieClasses" expanded="True">
               <Node name="Properties" expanded="True" />
-              <Node name="JeuDeLaVie.cs" selected="True" />
             </Node>
           </Node>
         </State>
@@ -30,7 +30,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.D22 PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

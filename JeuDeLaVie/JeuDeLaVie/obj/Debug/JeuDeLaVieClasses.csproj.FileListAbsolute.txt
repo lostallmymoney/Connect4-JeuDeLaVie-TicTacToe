@@ -4,3 +4,13 @@ F:/2/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVie.dll
 F:/2/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVie.pdb
 F:/2/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVieClasses.csprojAssemblyReference.cache
 F:/2/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVieClasses.csproj.CoreCompileInputs.cache
+/media/cc/605C87795C87492C/2/22/JeuDeLaVie/JeuDeLaVie/bin/Debug/JeuDeLaVie.dll
+/media/cc/605C87795C87492C/2/22/JeuDeLaVie/JeuDeLaVie/bin/Debug/JeuDeLaVie.pdb
+/media/cc/605C87795C87492C/2/22/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVieClasses.csproj.CoreCompileInputs.cache
+/media/cc/605C87795C87492C/2/22/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVie.dll
+/media/cc/605C87795C87492C/2/22/JeuDeLaVie/JeuDeLaVie/obj/Debug/JeuDeLaVie.pdb
+F:\2\22\JeuDeLaVie\JeuDeLaVie\bin\Debug\JeuDeLaVie.dll
+F:\2\22\JeuDeLaVie\JeuDeLaVie\bin\Debug\JeuDeLaVie.pdb
+F:\2\22\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVieClasses.csproj.CoreCompileInputs.cache
+F:\2\22\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVie.dll
+F:\2\22\JeuDeLaVie\JeuDeLaVie\obj\Debug\JeuDeLaVie.pdb

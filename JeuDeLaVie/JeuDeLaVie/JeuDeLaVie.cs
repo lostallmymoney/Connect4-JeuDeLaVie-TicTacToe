@@ -6,7 +6,7 @@ namespace JeuDeLaVie
 {
     public class JeuDeLaVieTable
     {
-        private static int _tailleX, _tailleY, _cycleMemory, nbCells, cycleSummary = 0;
+        private static int _tailleX, _tailleY, _cycleMemory, cycleSummary = 0;
         private static int[] cycleSummaries;
         private static int[,] cycleRowSummaries;
         private static bool _affichageChangement;
@@ -288,7 +288,6 @@ namespace JeuDeLaVie
             //translate les tables utilises vers le haut
             ArrayGPS.CycleAdd();
 
-            nbCells = _tailleX * _tailleY;
             cycleSummary = 0;
             //calcule le nombre de cellule adjascent
             //divide by 2 thread
