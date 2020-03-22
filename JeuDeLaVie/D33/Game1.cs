@@ -18,7 +18,7 @@ namespace D22
         private SpriteBatch spriteBatch;
         private Texture2D blackRectangle, tableTexture, menuTexture, arrowTexture, structureTexture;
         private SpriteFont font;
-        private Thread thread1, thread2;
+        private Thread thread1;
         private bool sideMenu = true, mouseFollowUp = true, structureFlipped=false;
         protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         private FPSCounter FpsCounter;
@@ -98,12 +98,10 @@ namespace D22
                     if (sideMenu)
                     {
                         graphics.PreferredBackBufferWidth = 50 + windowSizeX;
-                        tableTexture = new Texture2D(GraphicsDevice, windowSizeX + 50, windowSizeY);
                     }
                     else
                     {
                         graphics.PreferredBackBufferWidth = windowSizeX;
-                        tableTexture = new Texture2D(GraphicsDevice, windowSizeX, windowSizeY);
                     }
                     graphics.ApplyChanges();
                 }
@@ -323,12 +321,12 @@ namespace D22
             {
                 if (mouseFollowUp)
                 {
-                    spriteBatch.Draw(menuTexture, new Vector2(windowSizeX + 6, menuHeight));
                     spriteBatch.Draw(arrowTexture, new Vector2(windowSizeX + 12, menuHeight - 30));
                     if (selectedStructure != null && this.IsActive && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY)
                     {
                         spriteBatch.Draw(structureTexture, new Vector2(newState.X - selectedStructure.getWidth(arrowDirection) / 2, newState.Y - selectedStructure.getHeight(arrowDirection) / 2));
                     }
+                    spriteBatch.Draw(menuTexture, new Vector2(windowSizeX, 0));
                     spriteBatch.Draw(plusButtonTexture, new Vector2(windowSizeX + 4, 112), scale: new Vector2(1f));
                     spriteBatch.Draw(minusButtonTexture, new Vector2(windowSizeX + 27, 112), scale: new Vector2(1f));
 
@@ -351,19 +349,22 @@ namespace D22
         private MouseState oldState, newState;
         private void generateMenuTexture()
         {
-            Color[] menuMouse = new Color[40 * 22 * StructureManager.StructureTemplates.Count];
-            for (int y = 0; y < 22 * StructureManager.StructureTemplates.Count; y++)
+            Color[] menuMouse = new Color[50*windowSizeY];
+
+            for (int y = 0; y < windowSizeY; y++)
             {
-                for (int x = 0; x < 40; x++)
+                for (int x = 0; x < 50; x++)
                 {
-                    if (y % 22 != 0)
-                        if(indexSelectedStructure == null || (y/22) != indexSelectedStructure)
-                            menuMouse[y * 40 + x] = Color.Green;
+                    if(x>=6&&y>=menuHeight&&x<40&&(y-menuHeight)%22!=0&&(y-menuHeight)/22 < StructureManager.StructureTemplates.Count)
+                        if (indexSelectedStructure == null || ((y-menuHeight) / 22) != indexSelectedStructure)
+                            menuMouse[y * 50 + x] = Color.Green;
                         else
-                            menuMouse[y * 40 + x] = Color.Gray;
+                            menuMouse[y * 50 + x] = Color.Gray;
+                    else
+                        menuMouse[y * 50 + x] = Color.DarkSalmon;
                 }
             }
-            menuTexture = new Texture2D(GraphicsDevice, 40, 22 * StructureManager.StructureTemplates.Count);
+            menuTexture = new Texture2D(GraphicsDevice, 50, windowSizeY);
             menuTexture.SetData(menuMouse);
         }
 
@@ -403,5 +404,6 @@ namespace D22
                 structureTexture.SetData(structureColorArray);
             }
         }
+
     }
 }
