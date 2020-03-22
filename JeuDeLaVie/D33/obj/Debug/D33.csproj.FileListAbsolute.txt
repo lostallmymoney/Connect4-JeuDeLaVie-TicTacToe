@@ -21,3 +21,5 @@ F:\2\22\JeuDeLaVie\D33\obj\Debug\D33.csproj.CoreCompileInputs.cache
 F:\2\22\JeuDeLaVie\D33\obj\Debug\D33.csproj.CopyComplete
 F:\2\22\JeuDeLaVie\D33\obj\Debug\D33.exe
 F:\2\22\JeuDeLaVie\D33\obj\Debug\D33.pdb
+F:\2\22\JeuDeLaVie\D33\bin\DesktopGL\AnyCPU\Debug\Content\Textures\minus.xnb
+F:\2\22\JeuDeLaVie\D33\bin\DesktopGL\AnyCPU\Debug\Content\daFont.xnb

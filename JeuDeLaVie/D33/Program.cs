@@ -13,27 +13,36 @@ namespace D22
         [STAThread]
         static void Main(string[] args)
         {
-            Game1 game = null;
-            try
+            if (args.GetLength(0) > 0)
             {
-                Environment.SetEnvironmentVariable("FNA_AUDIO_DISABLE_SOUND", "1");
-                game = new Game1();
+                Console.WriteLine("Hi");
+                Console.ReadLine();
+                Console.ReadLine();
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Exeption 2.");
-                Console.WriteLine(e);
-            }
-
-            if (game != null)
-            {
+                Game1 game = null;
                 try
                 {
-                    game.Run();
+                    Environment.SetEnvironmentVariable("FNA_AUDIO_DISABLE_SOUND", "1");
+                    game = new Game1();
                 }
-                finally
+                catch (Exception e)
                 {
-                    game.Dispose();
+                    Console.WriteLine("Exeption 2.");
+                    Console.WriteLine(e);
+                }
+
+                if (game != null)
+                {
+                    try
+                    {
+                        game.Run();
+                    }
+                    finally
+                    {
+                        game.Dispose();
+                    }
                 }
             }
         }

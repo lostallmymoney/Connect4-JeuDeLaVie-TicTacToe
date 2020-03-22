@@ -45,6 +45,7 @@
         {
             swapTablesNew = 1;
             swapTablesOld = 0;
+            BackupTablesNumbers();
             cMem = cycleMemory;
         }
 
