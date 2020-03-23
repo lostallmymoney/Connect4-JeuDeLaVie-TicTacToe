@@ -26,6 +26,7 @@ namespace D22
         private int? indexSelectedStructure=null;
         private readonly int menuHeight = 176;
         private int arrowDirection = 0;
+        private StructureManager structureMgr;
 
         public Game1()
         {
@@ -55,6 +56,7 @@ namespace D22
 
             graphics.PreferredBackBufferHeight = windowSizeY;
             graphics.ApplyChanges();
+            structureMgr = new StructureManager();
             base.Initialize();
         }
         
@@ -159,9 +161,9 @@ namespace D22
                     {
                         indexSelectedStructure -= 1;
                         if (indexSelectedStructure < 0)
-                            indexSelectedStructure = StructureManager.StructureTemplates.Count-1;
+                            indexSelectedStructure = structureMgr.StructureTemplates.Count-1;
                     }
-                    selectedStructure = StructureManager.StructureTemplates[(int)indexSelectedStructure];
+                    selectedStructure = structureMgr.StructureTemplates[(int)indexSelectedStructure];
                     generateStructureTexture();
                     generateMenuTexture();
                 }
@@ -181,10 +183,10 @@ namespace D22
                         indexSelectedStructure = 0;
                     else { 
                         indexSelectedStructure += 1;
-                        if (indexSelectedStructure >= StructureManager.StructureTemplates.Count)
+                        if (indexSelectedStructure >= structureMgr.StructureTemplates.Count)
                             indexSelectedStructure = 0;
                     }
-                    selectedStructure = StructureManager.StructureTemplates[(int)indexSelectedStructure];
+                    selectedStructure = structureMgr.StructureTemplates[(int)indexSelectedStructure];
                     generateStructureTexture();
                     generateMenuTexture();
                 }
@@ -299,12 +301,12 @@ namespace D22
                         generateArrowTexture();
                     }
 
-                    for (int y = 0; !foundSomething && y < StructureManager.StructureTemplates.Count; y++)
+                    for (int y = 0; !foundSomething && y < structureMgr.StructureTemplates.Count; y++)
                     {
                         if (newState.X >= windowSizeX + 6 && newState.Y >= menuHeight + 22 * y && newState.X < windowSizeX + 46 && newState.Y < menuHeight + 22 * (y + 1))
                         {
                             foundSomething = true;
-                            selectedStructure = StructureManager.StructureTemplates[y];
+                            selectedStructure = structureMgr.StructureTemplates[y];
                             indexSelectedStructure = y;
                             generateStructureTexture();
                             generateMenuTexture();
@@ -321,18 +323,18 @@ namespace D22
             {
                 if (mouseFollowUp)
                 {
-                    spriteBatch.Draw(arrowTexture, new Vector2(windowSizeX + 12, menuHeight - 30));
                     if (selectedStructure != null && this.IsActive && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY)
                     {
                         spriteBatch.Draw(structureTexture, new Vector2(newState.X - selectedStructure.getWidth(arrowDirection) / 2, newState.Y - selectedStructure.getHeight(arrowDirection) / 2));
                     }
                     spriteBatch.Draw(menuTexture, new Vector2(windowSizeX, 0));
+                    spriteBatch.Draw(arrowTexture, new Vector2(windowSizeX + 12, menuHeight - 30));
                     spriteBatch.Draw(plusButtonTexture, new Vector2(windowSizeX + 4, 112), scale: new Vector2(1f));
                     spriteBatch.Draw(minusButtonTexture, new Vector2(windowSizeX + 27, 112), scale: new Vector2(1f));
 
-                    for (int i = 0; i < StructureManager.StructureTemplates.Count; i++)
+                    for (int i = 0; i < structureMgr.StructureTemplates.Count; i++)
                     {
-                        spriteBatch.DrawString(font, StructureManager.StructureTemplates[i].Id, new Vector2(windowSizeX + 6, menuHeight + 4 + i * 22), Color.Black);
+                        spriteBatch.DrawString(font, structureMgr.StructureTemplates[i].Id, new Vector2(windowSizeX + 6, menuHeight + 4 + i * 22), Color.Black);
                     }
                 }
 
@@ -355,7 +357,7 @@ namespace D22
             {
                 for (int x = 0; x < 50; x++)
                 {
-                    if(x>=6&&y>=menuHeight&&x<40&&(y-menuHeight)%22!=0&&(y-menuHeight)/22 < StructureManager.StructureTemplates.Count)
+                    if(x>=6&&y>=menuHeight&&x<40&&(y-menuHeight)%22!=0&&(y-menuHeight)/22 < structureMgr.StructureTemplates.Count)
                         if (indexSelectedStructure == null || ((y-menuHeight) / 22) != indexSelectedStructure)
                             menuMouse[y * 50 + x] = Color.Green;
                         else
@@ -379,7 +381,7 @@ namespace D22
                     {
                         for (int subX = 0; subX < 5; subX++)
                         {
-                            arrowMenu[y * 5*5*5 + subY*25 + x * 5 + subX] = (StructureManager.StructureTexture.Find(l => l.Id == "arrow").getValue(arrowDirection, x, y) ?? false) ? Color.Black : Color.Transparent;
+                            arrowMenu[y * 5*5*5 + subY*25 + x * 5 + subX] = (structureMgr.StructureTexture.Find(l => l.Id == "arrow").getValue(arrowDirection, x, y) ?? false) ? Color.Black : Color.Transparent;
                         }
                     }
                 }

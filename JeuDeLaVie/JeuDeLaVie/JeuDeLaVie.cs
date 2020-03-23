@@ -7,11 +7,13 @@ namespace JeuDeLaVie
 {
     public class JeuDeLaVieTable
     {
-        private static int _tailleX, _tailleY, _cycleMemory, cycleSummary = 0;
+        private static int _tailleX, _tailleY, _cycleMemory, _nbCyclesCheckedLive = 0, _cycleStateAncient = 0, _ancientMemoryDistance, _nbAncientSummaries, cycleSummary = 0;
         private static int[] cycleSummaries;
         private static int[,] cycleRowSummaries;
         private static Random generateur;
         private static Thread staleThread, thread1, thread2, thread3, thread4;
+        private static bool structureNature = true;
+        private static StructureManager StructureMgr;
 
         public static Color[] DonneeTables { get; private set; }
         public static char SymboleVie { get; set; } = 'o';
@@ -26,23 +28,30 @@ namespace JeuDeLaVie
 
         static JeuDeLaVieTable()
         {
+            StructureMgr = new StructureManager();
             generateur = new Random();
         }
 
-        public static void GenerateNew(int cycleMemory = 6, bool affichageChangement = false, double probabilite = 0.05, int tailleX = 800, int tailleY = 600, bool staleProof = false)
+        public static void GenerateNew(int memoryDistance = 600,int nbAncientSummaries = 16, bool affichageChangement = false, double probabilite = 0.00001, int tailleX = 800, int tailleY = 600, bool staleProof = false)
         {
-            _cycleMemory = cycleMemory + 2;
-            ArrayGPS.CycleReset(cycleMemory + 2);
+            if (nbAncientSummaries < 1)
+                nbAncientSummaries = 1;
+            _cycleStateAncient = memoryDistance;
+            _nbAncientSummaries = nbAncientSummaries;
+            _ancientMemoryDistance = memoryDistance;
+            int cycleMemory = _nbCyclesCheckedLive;
+            _cycleMemory = nbAncientSummaries + cycleMemory + 2;
+            ArrayGPS.CycleReset(nbAncientSummaries + cycleMemory + 2, nbAncientSummaries);
             AffichageChangement = affichageChangement;
-            TableauDeLaVie = new bool[tailleX, tailleY, cycleMemory + 2];
-            cycleSummaries = new int[cycleMemory + 2];
-            cycleRowSummaries = new int[cycleMemory + 2, tailleY];
+            TableauDeLaVie = new bool[tailleX, tailleY, nbAncientSummaries + cycleMemory + 2];
+            cycleSummaries = new int[nbAncientSummaries + cycleMemory + 2];
+            cycleRowSummaries = new int[nbAncientSummaries + cycleMemory + 2, tailleY];
             _tailleX = tailleX;
             _tailleY = tailleY;
 
-            while (staleThread != null && staleThread.IsAlive)
+            if (staleThread != null && staleThread.IsAlive)
             {
-                Thread.Sleep(10);
+                staleThread.Join();
             }
             Stale = false;
 
@@ -51,7 +60,29 @@ namespace JeuDeLaVie
             {
                 for (int x = 0; x < tailleX; x++)
                 {
-                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = (generateur.NextDouble() <= probabilite);
+                    if (structureNature)
+                    {
+                        if (generateur.NextDouble() <= probabilite)
+                        {
+                            bool r = (generateur.NextDouble() <= 0.5);
+                            int direction = generateur.Next(0,4);
+                            int selectedIndex = generateur.Next(0, StructureMgr.StructureTemplatesNature.Count);
+
+                            if (StructureMgr.StructureTemplatesNature[selectedIndex] != null)
+                            {
+                                for (int f = 0; f < StructureMgr.StructureTemplatesNature[selectedIndex].getHeight(direction); f++)
+                                {
+                                    for (int g = 0; g < StructureMgr.StructureTemplatesNature[selectedIndex].getWidth(direction); g++)
+                                    {
+                                        if (StructureMgr.StructureTemplatesNature[selectedIndex].getValue(direction, g, f, r) ?? false)
+                                            JeuDeLaVie.JeuDeLaVieTable.setLife(g + x - StructureMgr.StructureTemplatesNature[selectedIndex].getWidth(direction) / 2, f + y - StructureMgr.StructureTemplatesNature[selectedIndex].getHeight(direction) / 2);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                        TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = (generateur.NextDouble() <= probabilite);
                 }
             }
             //crée une copie initiale pour pas que l'affichage initial crée un erreur
@@ -71,9 +102,9 @@ namespace JeuDeLaVie
             }
         }
 
-        public static void StaleTestThreadF()
+        public static void SingleTestThread(int oStart, int oEnd)
         {
-            for (int o = 0; !StaleProof && o < _cycleMemory; o++)
+            for (int o = oStart; !StaleProof && o < oEnd; o++)
             {
                 if (o != ArrayGPS.GetSwapTablesNewB() && o != ArrayGPS.CycleEmulateNew())
                 {
@@ -126,6 +157,40 @@ namespace JeuDeLaVie
                     }
                 }
             }
+        }
+
+        public static void StaleTestThreadF()
+        {
+            _cycleStateAncient++;
+            if (_cycleStateAncient >= _ancientMemoryDistance)
+            {
+                _cycleStateAncient = 0;
+                ArrayGPS.IncrementAncientSummariesIndex();
+            }
+            Thread lThread1 = new Thread(() => { SingleTestThread(0, _cycleMemory / 4); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            Thread lThread2 = new Thread(() => { SingleTestThread(1, _cycleMemory / 2); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            Thread lThread3 = new Thread(() => { SingleTestThread(2, _cycleMemory / 4 * 3); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            Thread lThread4 = new Thread(() => { SingleTestThread(3, _cycleMemory); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            lThread1.Start();
+            lThread2.Start();
+            lThread3.Start();
+            lThread4.Start();
+            lThread1.Join();
+            lThread2.Join();
+            lThread3.Join();
+            lThread4.Join();
         }
 
 
