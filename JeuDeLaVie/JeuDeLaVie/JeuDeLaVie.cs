@@ -11,7 +11,7 @@ namespace JeuDeLaVie
         private static int[] cycleSummaries;
         private static int[,] cycleRowSummaries;
         private static Random generateur;
-        private static Thread staleThread, thread1, thread2, thread3, thread4;
+        private static Thread thread1, thread2, thread3, thread4, lThread1, lThread2, lThread3, lThread4;
         private static bool structureNature = true;
         private static StructureManager StructureMgr;
         private static int tailleY4, tailleY2, tailleY75, tailleY4X, tailleY2X, tailleY75X;
@@ -64,10 +64,6 @@ namespace JeuDeLaVie
             cycleMemory2 = _cycleMemory / 2;
             cycleMemory75 = cycleMemory4 * 3;
 
-            if (staleThread != null && staleThread.IsAlive)
-            {
-                staleThread.Join();
-            }
             Stale = false;
 
             //instancie le tableau de valeurs
@@ -125,96 +121,20 @@ namespace JeuDeLaVie
                 {
                     //if there's a match, looks deeper into it
                     bool cancelledLookup = false;
+                    if (cancelledLookup)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < _tailleY; i++)
+                        {
+                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
+                            {
+                                cancelledLookup = true;
+                                break;
+                            }
 
-                    //look every 6th
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else{
-                        for (int i = 0; i < _tailleY; i += 6)
-                        {
-                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
-                            {
-                                cancelledLookup = true;
-                                break;
-                            }
-
-                        }
-                    }
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        for (int i = 3; i < _tailleY; i += 6)
-                        {
-                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
-                            {
-                                cancelledLookup = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        for (int i = 1; i < _tailleY; i += 6)
-                        {
-                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
-                            {
-                                cancelledLookup = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        for (int i = 5; i < _tailleY; i += 6)
-                        {
-                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
-                            {
-                                cancelledLookup = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        for (int i = 2; i < _tailleY; i += 6)
-                        {
-                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
-                            {
-                                cancelledLookup = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        for (int i = 4; i < _tailleY; i += 6)
-                        {
-                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.GetSwapTablesNewB(), i])
-                            {
-                                cancelledLookup = true;
-                                break;
-                            }
                         }
                     }
 
@@ -553,11 +473,33 @@ namespace JeuDeLaVie
             //thread calcule old
             ArrayGPS.BackupTablesNumbers();
 
-            staleThread = new Thread(StaleTestThreadF)
+            _cycleStateAncient++;
+            if (_cycleStateAncient == (256))
+            {
+                ArrayGPS.IncrementAncientSummariesIndex();
+                _cycleStateAncient = 0;
+            }
+
+            lThread1 = new Thread(() => { SingleTestThread(0, cycleMemory4); })
             {
                 Priority = ThreadPriority.Highest
             };
-            staleThread.Start();
+            lThread2 = new Thread(() => { SingleTestThread(cycleMemory4, cycleMemory2); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            lThread3 = new Thread(() => { SingleTestThread(cycleMemory2, cycleMemory75); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            lThread4 = new Thread(() => { SingleTestThread(cycleMemory75, _cycleMemory); })
+            {
+                Priority = ThreadPriority.Highest
+            };
+            lThread1.Start();
+            lThread2.Start();
+            lThread3.Start();
+            lThread4.Start();
 
             //translate les tables utilises vers le haut
             ArrayGPS.CycleAdd();
@@ -658,7 +600,11 @@ namespace JeuDeLaVie
 
             //set the cycle summaries in case there's a match
             cycleSummaries[ArrayGPS.GetSwapTablesNew()] = cycleSummary;
-            staleThread.Join();
+
+            lThread1.Join();
+            lThread2.Join();
+            lThread3.Join();
+            lThread4.Join();
         }
         public override string ToString()
         {

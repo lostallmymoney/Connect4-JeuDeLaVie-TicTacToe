@@ -6,8 +6,7 @@ namespace JeuDeLaVie
     public class FPSCounter
     {
         public FPSCounter()
-        {
-        }
+        {        }
 
         public long FPSTotal { get; private set; }
         public float TotalS { get; private set; }
