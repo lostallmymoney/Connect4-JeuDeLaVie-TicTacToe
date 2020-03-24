@@ -7,7 +7,7 @@ namespace JeuDeLaVie
 {
     public class JeuDeLaVieTable
     {
-        private static int _tailleX, _tailleY, _cycleMemory, _nbCyclesCheckedLive = 0, _cycleStateAncient = 0, cycleSummary = 0, _memoryDistance;
+        private static int _tailleX, _tailleY, _cycleMemory, _cycleStateAncient = 0, cycleSummary = 0, _memoryDistance;
         private static int[] cycleSummaries;
         private static int[,] cycleRowSummaries;
         private static Random generateur;
@@ -26,7 +26,7 @@ namespace JeuDeLaVie
         public static char SymboleNaissant { get; set; } = '.';
         public static bool Stale { get; private set; } = false;
         public static bool StaleProof { get; set; } = false;
-        public static int StaleCycle { get; private set; }
+        public static int StaleCycle { get; private set; } = 0;
         public static bool AffichageChangement { get; set; }
 
         static JeuDeLaVieTable()
@@ -40,12 +40,12 @@ namespace JeuDeLaVie
             if (nbAncientSummaries < 1)
                 nbAncientSummaries = 1;
             _memoryDistance = memoryDistance;
-            _cycleMemory = nbAncientSummaries + _nbCyclesCheckedLive + 2;
-            ArrayGPS.CycleReset(nbAncientSummaries + _nbCyclesCheckedLive + 2, nbAncientSummaries);
+            _cycleMemory = nbAncientSummaries + 2;
+            ArrayGPS.CycleReset(nbAncientSummaries + 2, nbAncientSummaries);
             AffichageChangement = affichageChangement;
-            TableauDeLaVie = new bool[tailleX, tailleY, nbAncientSummaries + _nbCyclesCheckedLive + 2];
-            cycleSummaries = new int[nbAncientSummaries + _nbCyclesCheckedLive + 2];
-            cycleRowSummaries = new int[nbAncientSummaries + _nbCyclesCheckedLive + 2, tailleY];
+            TableauDeLaVie = new bool[tailleX, tailleY, nbAncientSummaries + 2];
+            cycleSummaries = new int[nbAncientSummaries + 2];
+            cycleRowSummaries = new int[nbAncientSummaries + 2, tailleY];
             _tailleX = tailleX;
             _tailleY = tailleY;
             DonneeTables = new Color[_tailleX * _tailleY];
@@ -153,14 +153,16 @@ namespace JeuDeLaVie
                     {
                         Stale = true;
                         StaleCycle = 0;
-                        for (int oToNew = oStart; oToNew != ArrayGPS.GetSwapTablesNewB(); oToNew++)
+                        int i = 0;
+                        for (int oToNew = oStart; oToNew != ArrayGPS.GetSwapTablesNewB(); oToNew++, i++)
                         {
                             if (oToNew == _cycleMemory - 1)
                             {
                                 oToNew = -1;
                             }
-                            StaleCycle++;
+                            i++;
                         }
+                        StaleCycle = _memoryDistance * (2 ^ (i - 2)) + _cycleStateAncient;
                     }
                 }
             }

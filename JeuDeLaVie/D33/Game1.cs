@@ -338,6 +338,16 @@ namespace D22
                 spriteBatch.DrawString(font, "FPS:" + Environment.NewLine + FpsCounter.AvgFPS, new Vector2(windowSizeX + 6, 30), Color.Black);
                 spriteBatch.DrawString(font, "1FPS" + Environment.NewLine + FpsCounter.CurrentFPS, new Vector2(windowSizeX + 6, 70), Color.Black);
             }
+            if (JeuDeLaVieTable.StaleCycle != 0)
+                spriteBatch.DrawString(font,
+                                       JeuDeLaVieTable.StaleCycle.ToString(),
+                                       new Vector2(windowSizeX + 1, 8),
+                                       Color.Black,
+                                       rotation: 0f,
+                                       origin: new Vector2(0, 0),
+                                       scale: new Vector2(0.68f), 
+                                       SpriteEffects.None, 0f);
+
             spriteBatch.End();
         }
 
