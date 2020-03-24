@@ -7,7 +7,7 @@ namespace JeuDeLaVie
 {
     public class JeuDeLaVieTable
     {
-        private static int _tailleX, _tailleY, _cycleMemory, _nbCyclesCheckedLive = 0, _cycleStateAncient = 0, cycleSummary = 0;
+        private static int _tailleX, _tailleY, _cycleMemory, _nbCyclesCheckedLive = 0, _cycleStateAncient = 0, cycleSummary = 0, _memoryDistance;
         private static int[] cycleSummaries;
         private static int[,] cycleRowSummaries;
         private static Random generateur;
@@ -35,11 +35,11 @@ namespace JeuDeLaVie
             generateur = new Random();
         }
 
-        public static void GenerateNew(int memoryDistance = 256, int nbAncientSummaries = 12, bool affichageChangement = false, double probabilite = 0.00002, int tailleX = 800, int tailleY = 600, bool staleProof = false)
+        public static void GenerateNew(int memoryDistance = 50, int nbAncientSummaries = 12, bool affichageChangement = false, double probabilite = 0.00002, int tailleX = 800, int tailleY = 600, bool staleProof = false)
         {
             if (nbAncientSummaries < 1)
                 nbAncientSummaries = 1;
-            _cycleStateAncient = memoryDistance;
+            _memoryDistance = memoryDistance;
             int cycleMemory = _nbCyclesCheckedLive;
             _cycleMemory = nbAncientSummaries + cycleMemory + 2;
             ArrayGPS.CycleReset(nbAncientSummaries + cycleMemory + 2, nbAncientSummaries);
@@ -176,13 +176,6 @@ namespace JeuDeLaVie
 
         public static void StaleTestThreadF()
         {
-            _cycleStateAncient++;
-            if (_cycleStateAncient == (256))
-            {
-                ArrayGPS.IncrementAncientSummariesIndex();
-                _cycleStateAncient = 0;
-            }
-
             Thread lThread1 = new Thread(() => { SingleTestThread(0, cycleMemory4); })
             {
                 Priority = ThreadPriority.Highest
@@ -474,9 +467,9 @@ namespace JeuDeLaVie
             ArrayGPS.BackupTablesNumbers();
 
             _cycleStateAncient++;
-            if (_cycleStateAncient == (256))
+            if (_cycleStateAncient == _memoryDistance)
             {
-                ArrayGPS.IncrementAncientSummariesIndex();
+                ArrayGPS.pushAncient1();
                 _cycleStateAncient = 0;
             }
 

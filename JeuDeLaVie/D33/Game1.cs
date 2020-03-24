@@ -20,7 +20,7 @@ namespace D22
         private SpriteFont font;
         private Thread thread1;
         private bool sideMenu = true, mouseFollowUp = true, structureFlipped=false;
-        protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
+        protected internal int staleWaitTime = 500, windowSizeX = 300, windowSizeY = 300;
         private FPSCounter FpsCounter;
         private StructureTemplate selectedStructure;
         private int? indexSelectedStructure=null;

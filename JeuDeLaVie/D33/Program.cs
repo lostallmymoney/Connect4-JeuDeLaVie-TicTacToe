@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace D22
 {
@@ -13,6 +14,9 @@ namespace D22
         [STAThread]
         static void Main(string[] args)
         {
+            using (Process p = Process.GetCurrentProcess())
+                p.PriorityClass = ProcessPriorityClass.RealTime;
+
             if (args.GetLength(0) > 0)
             {
                 Console.WriteLine("Hi");

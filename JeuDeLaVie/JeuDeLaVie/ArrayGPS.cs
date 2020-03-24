@@ -8,11 +8,6 @@ namespace JeuDeLaVie
         private static int[] ancientMemPyramid;
         private static bool[] ancientMemPyramidBool;
 
-        public static void IncrementAncientSummariesIndex()
-        {
-            pushAncient(swap: swapTablesNewB);
-        }
-
         public static void BackupTablesNumbers()
         {
             swapTablesNewB = swapTablesNew;
@@ -42,19 +37,31 @@ namespace JeuDeLaVie
             } while (ancientMemPyramid.Contains(swapTablesNew));
         }
 
-        public static void pushAncient(int swap, int id = 0)
+        public static void pushAncient1()
+        {
+            if (ancientMemPyramidBool[0])
+            {
+                pushAncient(ancientMemPyramid[0], 1);
+                ancientMemPyramid[0] = swapTablesNewB;
+                ancientMemPyramidBool[0] = false;
+            }
+            else
+            {
+                ancientMemPyramid[0] = swapTablesNewB;
+                ancientMemPyramidBool[0] = true;
+            }
+        }
+
+        private static void pushAncient(int swap, int id = 0)
         {
             if (ancientMemPyramidBool[id])
             {
                 ancientMemPyramidBool[id] = false;
-                if (id < cMemAncient - 1) { 
-                    pushAncient(ancientMemPyramid[id], id + 1);
-                    ancientMemPyramid[id] = swap;
-                }
-                else
+                if (id < cMemAncient - 1)
                 {
-                    ancientMemPyramid[id] = swap;
+                    pushAncient(ancientMemPyramid[id], id + 1);
                 }
+                ancientMemPyramid[id] = swap;
             }
             else
             {
@@ -73,6 +80,10 @@ namespace JeuDeLaVie
 
             ancientMemPyramid = new int[nbAncient];
             ancientMemPyramidBool = new bool[nbAncient];
+            for(int i=0; i<nbAncient; i++)
+            {
+                ancientMemPyramidBool[i] = false;
+            }
         }
 
         public static int CycleEmulateNew()
