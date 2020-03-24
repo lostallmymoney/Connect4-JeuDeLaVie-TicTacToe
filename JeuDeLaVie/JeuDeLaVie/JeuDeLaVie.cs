@@ -40,13 +40,12 @@ namespace JeuDeLaVie
             if (nbAncientSummaries < 1)
                 nbAncientSummaries = 1;
             _memoryDistance = memoryDistance;
-            int cycleMemory = _nbCyclesCheckedLive;
-            _cycleMemory = nbAncientSummaries + cycleMemory + 2;
-            ArrayGPS.CycleReset(nbAncientSummaries + cycleMemory + 2, nbAncientSummaries);
+            _cycleMemory = nbAncientSummaries + _nbCyclesCheckedLive + 2;
+            ArrayGPS.CycleReset(nbAncientSummaries + _nbCyclesCheckedLive + 2, nbAncientSummaries);
             AffichageChangement = affichageChangement;
-            TableauDeLaVie = new bool[tailleX, tailleY, nbAncientSummaries + cycleMemory + 2];
-            cycleSummaries = new int[nbAncientSummaries + cycleMemory + 2];
-            cycleRowSummaries = new int[nbAncientSummaries + cycleMemory + 2, tailleY];
+            TableauDeLaVie = new bool[tailleX, tailleY, nbAncientSummaries + _nbCyclesCheckedLive + 2];
+            cycleSummaries = new int[nbAncientSummaries + _nbCyclesCheckedLive + 2];
+            cycleRowSummaries = new int[nbAncientSummaries + _nbCyclesCheckedLive + 2, tailleY];
             _tailleX = tailleX;
             _tailleY = tailleY;
             DonneeTables = new Color[_tailleX * _tailleY];
