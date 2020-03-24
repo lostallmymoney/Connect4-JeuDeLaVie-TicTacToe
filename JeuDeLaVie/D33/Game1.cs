@@ -251,7 +251,7 @@ namespace D22
                         for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
                         {
                             if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) ?? false)
-                                JeuDeLaVie.JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
+                                JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
                         }
                     }
                 }
