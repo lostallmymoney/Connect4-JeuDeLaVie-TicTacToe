@@ -19,11 +19,11 @@ namespace D22
         private Texture2D blackRectangle, tableTexture, menuTexture, arrowTexture, structureTexture;
         private SpriteFont font;
         private Thread thread1;
-        private bool sideMenu = true, mouseFollowUp = true, structureFlipped=false;
+        private bool sideMenu = true, mouseFollowUp = true, structureFlipped = false, sideMenuEtMouseFollowUp;
         protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         private FPSCounter FpsCounter;
         private StructureTemplate selectedStructure;
-        private int? indexSelectedStructure=null;
+        private int? indexSelectedStructure = null;
         private readonly int menuHeight = 176;
         private int arrowDirection = 0;
         private StructureManager structureMgr;
@@ -59,7 +59,7 @@ namespace D22
             structureMgr = new StructureManager();
             base.Initialize();
         }
-        
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -116,7 +116,7 @@ namespace D22
             }
             else
             {
-                if (sideMenu && mouseFollowUp && Keyboard.GetState().IsKeyDown(Keys.Q))
+                if (sideMenuEtMouseFollowUp && Keyboard.GetState().IsKeyDown(Keys.Q))
                 {
                     wasQDown = true;
                     arrowDirection += 1;
@@ -134,7 +134,7 @@ namespace D22
             }
             else
             {
-                if (sideMenu && mouseFollowUp && Keyboard.GetState().IsKeyDown(Keys.E))
+                if (sideMenuEtMouseFollowUp && Keyboard.GetState().IsKeyDown(Keys.E))
                 {
                     wasEDown = true;
                     arrowDirection -= 1;
@@ -161,7 +161,7 @@ namespace D22
                     {
                         indexSelectedStructure -= 1;
                         if (indexSelectedStructure < 0)
-                            indexSelectedStructure = structureMgr.StructureTemplates.Count-1;
+                            indexSelectedStructure = structureMgr.StructureTemplates.Count - 1;
                     }
                     selectedStructure = structureMgr.StructureTemplates[(int)indexSelectedStructure];
                     generateStructureTexture();
@@ -181,7 +181,7 @@ namespace D22
                     wasSDown = true;
                     if (indexSelectedStructure == null)
                         indexSelectedStructure = 0;
-                    else { 
+                    else {
                         indexSelectedStructure += 1;
                         if (indexSelectedStructure >= structureMgr.StructureTemplates.Count)
                             indexSelectedStructure = 0;
@@ -242,28 +242,14 @@ namespace D22
         protected override void Update(GameTime gameTime)
         {
             newState = Mouse.GetState();
-            if (sideMenu && mouseFollowUp && (newState.LeftButton == ButtonState.Pressed && (oldState == null || oldState.LeftButton == ButtonState.Released)))
-            {
-                if (selectedStructure != null && newState.X < windowSizeX && newState.Y < windowSizeY)
-                {
-                    for (int y = 0; y < selectedStructure.getHeight(arrowDirection); y++)
-                    {
-                        for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
-                        {
-                            if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) ?? false)
-                                JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
-                        }
-                    }
-                }
-            }
-            
+            sideMenuEtMouseFollowUp = sideMenu && mouseFollowUp;
+
             if (JeuDeLaVieTable.Stale)
             {
                 JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
                 JeuDeLaVieTable.GenerateInitialImg();
             }
-            else
-            {
+            else { 
                 thread1 = new Thread(JeuDeLaVieTable.CalculerCycle)
                 {
                     Priority = ThreadPriority.Highest
@@ -272,6 +258,7 @@ namespace D22
             }
 
             DrawThread();
+            oldState = newState;
             if (thread1 != null && thread1.IsAlive)
                 thread1.Join();
 
@@ -284,13 +271,16 @@ namespace D22
 
         protected void DrawThread()
         {
-            //generate click boxes on top
-            if (sideMenu && mouseFollowUp && this.IsActive) { 
-                
-                if (newState.LeftButton == ButtonState.Pressed && (oldState == null || oldState.LeftButton == ButtonState.Released))
+            //generate click boxes on top            
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+            spriteBatch.Draw(tableTexture, new Vector2(0, 0));
+            if (sideMenuEtMouseFollowUp)
+            {
+                bool statePressed = newState.LeftButton == ButtonState.Pressed && (oldState == null || oldState.LeftButton == ButtonState.Released) && this.IsActive;
+                if (statePressed)
                 {
                     bool foundSomething = false;
-
                     if (newState.X >= windowSizeX + 12 && newState.Y >= menuHeight - 30 && newState.X < windowSizeX + 37 && newState.Y < menuHeight - 5)
                     {
                         foundSomething = true;
@@ -313,36 +303,40 @@ namespace D22
                         }
                     }
                 }
-                oldState = newState;
-            }            
-            
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin();
-            spriteBatch.Draw(tableTexture, new Vector2(0, 0));
-            if (sideMenu)
-            {
-                if (mouseFollowUp)
+
+                if (selectedStructure != null && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY) { 
+                    if (statePressed)
+                    {
+                        if (newState.X < windowSizeX && newState.Y < windowSizeY)
+                        {
+                            for (int y = 0; y < selectedStructure.getHeight(arrowDirection); y++)
+                            {
+                                for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
+                                {
+                                    if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) ?? false)
+                                        JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
+                                }
+                            }
+                        }
+                    }
+                    spriteBatch.Draw(structureTexture, new Vector2(newState.X - selectedStructure.getWidth(arrowDirection) / 2, newState.Y - selectedStructure.getHeight(arrowDirection) / 2));
+                }
+
+                spriteBatch.Draw(menuTexture, new Vector2(windowSizeX, 0));
+                spriteBatch.Draw(arrowTexture, new Vector2(windowSizeX + 12, menuHeight - 30));
+                spriteBatch.Draw(plusButtonTexture, new Vector2(windowSizeX + 4, 112), scale: new Vector2(1f));
+                spriteBatch.Draw(minusButtonTexture, new Vector2(windowSizeX + 27, 112), scale: new Vector2(1f));
+
+                for (int i = 0; i < structureMgr.StructureTemplates.Count; i++)
                 {
-                    if (selectedStructure != null && this.IsActive && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY)
-                    {
-                        spriteBatch.Draw(structureTexture, new Vector2(newState.X - selectedStructure.getWidth(arrowDirection) / 2, newState.Y - selectedStructure.getHeight(arrowDirection) / 2));
-                    }
-                    spriteBatch.Draw(menuTexture, new Vector2(windowSizeX, 0));
-                    spriteBatch.Draw(arrowTexture, new Vector2(windowSizeX + 12, menuHeight - 30));
-                    spriteBatch.Draw(plusButtonTexture, new Vector2(windowSizeX + 4, 112), scale: new Vector2(1f));
-                    spriteBatch.Draw(minusButtonTexture, new Vector2(windowSizeX + 27, 112), scale: new Vector2(1f));
-
-                    for (int i = 0; i < structureMgr.StructureTemplates.Count; i++)
-                    {
-                        spriteBatch.DrawString(font, structureMgr.StructureTemplates[i].Id, new Vector2(windowSizeX + 6, menuHeight + 4 + i * 22), Color.Black);
-                    }
+                    spriteBatch.DrawString(font, structureMgr.StructureTemplates[i].Id, new Vector2(windowSizeX + 6, menuHeight + 4 + i * 22), Color.Black);
                 }
+            }
 
-                if (FpsCounter.FPSTotal >= FpsCounter.NbFrameCount) 
-                { 
-                    spriteBatch.DrawString(font, "FPS:" + Environment.NewLine + FpsCounter.AvgFPS, new Vector2(windowSizeX + 6, 30), Color.Black);
-                    spriteBatch.DrawString(font, "1FPS" + Environment.NewLine + FpsCounter.CurrentFPS, new Vector2(windowSizeX + 6, 70), Color.Black);
-                }
+            if (FpsCounter.FPSTotal >= FpsCounter.NbFrameCount)
+            {
+                spriteBatch.DrawString(font, "FPS:" + Environment.NewLine + FpsCounter.AvgFPS, new Vector2(windowSizeX + 6, 30), Color.Black);
+                spriteBatch.DrawString(font, "1FPS" + Environment.NewLine + FpsCounter.CurrentFPS, new Vector2(windowSizeX + 6, 70), Color.Black);
             }
             spriteBatch.End();
         }

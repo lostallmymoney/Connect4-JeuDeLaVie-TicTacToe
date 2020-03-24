@@ -106,7 +106,8 @@ namespace JeuDeLaVie
 
             StructureTemplates.ForEach(s =>
             {
-                if (s.Id[0] != 'V' && s.Id[0] != 'S' && s.Id!="arrow")
+                //s.Id[0] != 'V' && s.Id[0] != 'S' && s.Id!="arrow"
+                if (s.Id[0] == 'V' || s.Id[0] == 'S')
                     StructureTemplatesNature.Add(s);
             });
 
