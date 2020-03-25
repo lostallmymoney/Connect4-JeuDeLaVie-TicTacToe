@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace JeuDeLaVie
 {
@@ -37,6 +38,7 @@ namespace JeuDeLaVie
             } while (ancientMemPyramid.Contains(swapTablesNew));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void pushAncient1()
         {
             if (ancientMemPyramidBool[0])
@@ -52,6 +54,7 @@ namespace JeuDeLaVie
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void pushAncient(int swap, int id = 0)
         {
             if (ancientMemPyramidBool[id])
@@ -70,6 +73,7 @@ namespace JeuDeLaVie
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CycleReset(int cycleMemory, int nbAncient)
         {
             swapTablesNew = 1;
@@ -86,6 +90,8 @@ namespace JeuDeLaVie
             }
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CycleEmulateNew()
         {
             int r = swapTablesNewB;

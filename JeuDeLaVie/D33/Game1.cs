@@ -1,18 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
-using JeuDeLaVie;
+﻿using JeuDeLaVie;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace D22
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public class Game1 : Game
     {
+        protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         private static Texture2D plusButtonTexture, minusButtonTexture;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -20,17 +18,20 @@ namespace D22
         private SpriteFont font;
         private Thread thread1;
         private bool sideMenu = true, mouseFollowUp = true, structureFlipped = false, sideMenuEtMouseFollowUp;
-        protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         private FPSCounter FpsCounter;
         private StructureTemplate selectedStructure;
         private int? indexSelectedStructure = null;
         private readonly int menuHeight = 176;
         private int arrowDirection = 0;
         private StructureManager structureMgr;
+        private MouseState oldState, newState;
 
         public Game1()
         {
             selectedStructure = null;
+
+            oldState = Mouse.GetState();
+            newState = oldState;
 
             IsMouseVisible = true;
             Window.AllowUserResizing = false;
@@ -77,13 +78,11 @@ namespace D22
             generateMenuTexture();
             generateArrowTexture();
         }
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
 
         //key manage vars
         private bool wasTABDown, wasMDown, wasCDown, wasQDown, wasEDown, wasRDown, wasWDown, wasSDown;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void KeyManage()
         {
             if (wasTABDown)
@@ -241,34 +240,30 @@ namespace D22
 
         protected override void Update(GameTime gameTime)
         {
-            newState = Mouse.GetState();
-            sideMenuEtMouseFollowUp = sideMenu && mouseFollowUp;
 
             if (JeuDeLaVieTable.Stale)
-            {
                 JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
-                JeuDeLaVieTable.GenerateInitialImg();
-            }
-            else { 
-                thread1 = new Thread(JeuDeLaVieTable.CalculerCycle)
-                {
-                    Priority = ThreadPriority.Highest
-                };
-                thread1.Start();
-            }
+            if(thread1!=null && thread1.IsAlive)
+                thread1.Join();
+            tableTexture.SetData(JeuDeLaVieTable.DonneeTables);
+            thread1 = new Thread(JeuDeLaVieTable.CalculerCycle)
+            {
+                Priority = ThreadPriority.Highest
+            };
+            thread1.Start();
 
+            sideMenuEtMouseFollowUp = sideMenu && mouseFollowUp;
+            KeyManage();
             DrawThread();
             oldState = newState;
-            if (thread1 != null && thread1.IsAlive)
-                thread1.Join();
-
-            tableTexture.SetData(JeuDeLaVieTable.DonneeTables);
-
-            KeyManage();
+            newState = Mouse.GetState();
             base.Update(gameTime);
             FpsCounter.Add((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            thread1.Join();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void DrawThread()
         {
             //generate click boxes on top            
@@ -277,7 +272,7 @@ namespace D22
             spriteBatch.Draw(tableTexture, new Vector2(0, 0));
             if (sideMenuEtMouseFollowUp)
             {
-                bool statePressed = newState.LeftButton == ButtonState.Pressed && (oldState == null || oldState.LeftButton == ButtonState.Released) && this.IsActive;
+                bool statePressed = newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released && this.IsActive;
                 if (statePressed)
                 {
                     bool foundSomething = false;
@@ -347,12 +342,9 @@ namespace D22
                                        origin: new Vector2(0, 0),
                                        scale: new Vector2(0.68f), 
                                        SpriteEffects.None, 0f);
-
             spriteBatch.End();
         }
 
-
-        private MouseState oldState, newState;
         private void generateMenuTexture()
         {
             Color[] menuMouse = new Color[50*windowSizeY];
@@ -410,6 +402,5 @@ namespace D22
                 structureTexture.SetData(structureColorArray);
             }
         }
-
     }
 }

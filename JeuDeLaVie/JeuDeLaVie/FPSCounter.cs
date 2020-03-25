@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace JeuDeLaVie
 {
@@ -17,6 +18,7 @@ namespace JeuDeLaVie
 
         private Queue<float> _sampleBuffer = new Queue<float>();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(float deltaTime)
         {
             CurrentFPS = 1.0f / deltaTime;
