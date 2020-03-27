@@ -10,14 +10,14 @@ namespace D22
 {
     public class Game1 : Game
     {
-        protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
+        protected internal int staleWaitTime = 500, windowSizeX = 350, windowSizeY = 350;
         private static Texture2D plusButtonTexture, minusButtonTexture;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Texture2D blackRectangle, tableTexture, menuTexture, arrowTexture, structureTexture;
         private SpriteFont font;
         private Thread thread1;
-        private bool sideMenu = true, mouseFollowUp = true, structureFlipped = false, sideMenuEtMouseFollowUp;
+        private bool sideMenu = true, mouseFollowUp = true, structureFlipped = false, sideMenuEtMouseFollowUp = false;
         private FPSCounter FpsCounter;
         private StructureTemplate selectedStructure;
         private int? indexSelectedStructure = null;
@@ -238,13 +238,11 @@ namespace D22
                 Exit();
         }
 
+        private bool structureHover = false, statePressed = false;
         protected override void Update(GameTime gameTime)
         {
-
             if (JeuDeLaVieTable.Stale)
                 JeuDeLaVieTable.GenerateNew(tailleX: windowSizeX, tailleY: windowSizeY);
-            if(thread1!=null && thread1.IsAlive)
-                thread1.Join();
             tableTexture.SetData(JeuDeLaVieTable.DonneeTables);
             thread1 = new Thread(JeuDeLaVieTable.CalculerCycle)
             {
@@ -252,15 +250,37 @@ namespace D22
             };
             thread1.Start();
 
-            sideMenuEtMouseFollowUp = sideMenu && mouseFollowUp;
-            KeyManage();
-            DrawThread();
             oldState = newState;
             newState = Mouse.GetState();
+            
+            KeyManage();
+            sideMenuEtMouseFollowUp = sideMenu && mouseFollowUp;
+            structureHover = selectedStructure != null && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY;
+            statePressed = newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released && this.IsActive;
+            DrawThread();
             base.Update(gameTime);
             FpsCounter.Add((float)gameTime.ElapsedGameTime.TotalSeconds);
-
             thread1.Join();
+
+            if (structureHover)
+            {
+                if (statePressed)
+                {
+                    if (newState.X < windowSizeX && newState.Y < windowSizeY)
+                    {
+                        for (int y = 0; y < selectedStructure.getHeight(arrowDirection); y++)
+                        {
+                            for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
+                            {
+                                if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) ?? false)
+                                {
+                                    JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -272,7 +292,6 @@ namespace D22
             spriteBatch.Draw(tableTexture, new Vector2(0, 0));
             if (sideMenuEtMouseFollowUp)
             {
-                bool statePressed = newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released && this.IsActive;
                 if (statePressed)
                 {
                     bool foundSomething = false;
@@ -299,23 +318,11 @@ namespace D22
                     }
                 }
 
-                if (selectedStructure != null && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY) { 
-                    if (statePressed)
-                    {
-                        if (newState.X < windowSizeX && newState.Y < windowSizeY)
-                        {
-                            for (int y = 0; y < selectedStructure.getHeight(arrowDirection); y++)
-                            {
-                                for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
-                                {
-                                    if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) ?? false)
-                                        JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
-                                }
-                            }
-                        }
-                    }
+                if (structureHover)
+                {
                     spriteBatch.Draw(structureTexture, new Vector2(newState.X - selectedStructure.getWidth(arrowDirection) / 2, newState.Y - selectedStructure.getHeight(arrowDirection) / 2));
                 }
+
 
                 spriteBatch.Draw(menuTexture, new Vector2(windowSizeX, 0));
                 spriteBatch.Draw(arrowTexture, new Vector2(windowSizeX + 12, menuHeight - 30));

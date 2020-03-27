@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace JeuDeLaVie
@@ -17,7 +18,7 @@ namespace JeuDeLaVie
         private static int cycleMemory4, cycleMemory2, cycleMemory75;
         private static byte[,,] TableauDeLaVie;
 
-        public static Color[] DonneeTables { get; private set; }
+        public static Color[] DonneeTables { get; set; }
         public static bool Stale { get; private set; } = false;
         public static int StaleCycle { get; private set; } = 0;
         public static bool AffichageChangement { get; set; }
@@ -93,6 +94,12 @@ namespace JeuDeLaVie
             }
             //crée une copie initiale pour pas que l'affichage initial crée un erreur
             ArrayGPS.BackupTablesNumbers();
+            generateImage();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void generateImage()
+        {
             for (int y = 0, yByXtotal = 0; y < _tailleY; y++, yByXtotal += _tailleX)
             {
                 for (int x = 0; x < _tailleX; x++)
@@ -105,37 +112,22 @@ namespace JeuDeLaVie
 
         public static void setLife(int x, int y, byte value = 1)
         {
-            if (x < 0)
-                if (y < 0)
-                    TableauDeLaVie[_tailleX + x, _tailleY + y, ArrayGPS.GetSwapTablesNew()] = value;
-                else
-                    if (y >= _tailleY)
-                        TableauDeLaVie[_tailleX + x, y - _tailleY, ArrayGPS.GetSwapTablesNew()] = value;
-                    else
-                        TableauDeLaVie[_tailleX + x, y, ArrayGPS.GetSwapTablesNew()] = value;
+            int rX = x < 0 ? _tailleX + x : (x >= _tailleX ? x - _tailleX : x), rY = y < 0 ? _tailleY + y : (y >= _tailleY ? y - _tailleY : y),
+                nbYBackY = y * _tailleX;
+            TableauDeLaVie[rX, rY, ArrayGPS.GetSwapTablesNew()] = value;
+
+            if (value == 1)
+                DonneeTables[nbYBackY + x] = Color.Black;
             else
-                if (x >= _tailleX)
-                    if (y < 0)
-                        TableauDeLaVie[x - _tailleX, _tailleY + y, ArrayGPS.GetSwapTablesNew()] = value;
-                    else
-                        if (y >= _tailleY)
-                            TableauDeLaVie[x - _tailleX, y - _tailleY, ArrayGPS.GetSwapTablesNew()] = value;
-                        else
-                            TableauDeLaVie[x - _tailleX, y, ArrayGPS.GetSwapTablesNew()] = value;
-            else
-                if (y < 0)
-                    TableauDeLaVie[x, _tailleY + y, ArrayGPS.GetSwapTablesNew()] = value;
-                else
-                    if (y >= _tailleY)
-                        TableauDeLaVie[x, y - _tailleY, ArrayGPS.GetSwapTablesNew()] = value;
-                    else
-                        TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = value;
+                DonneeTables[nbYBackY + x] = Color.Transparent;
         }
 
         public static void CalculerCycle()
         {
             //thread calcule old
             ArrayGPS.BackupTablesNumbers();
+            //translate les tables utilises vers le haut
+            ArrayGPS.CycleAdd();
 
             _cycleStateAncient++;
             if (_cycleStateAncient == _memoryDistance)
@@ -147,7 +139,7 @@ namespace JeuDeLaVie
             lThread1 = new Thread(() => {
                 for (int oStart = 0; oStart < cycleMemory4; oStart++)
                 {
-                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.CycleEmulateNew())
+                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.GetSwapTablesNew())
                     {
                         //if there's a match, looks deeper into it
                         bool cancelledLookup = false;
@@ -204,7 +196,7 @@ namespace JeuDeLaVie
             lThread2 = new Thread(() => {
                 for (int oStart = cycleMemory4; oStart < cycleMemory2; oStart++)
                 {
-                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.CycleEmulateNew())
+                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.GetSwapTablesNew())
                     {
                         //if there's a match, looks deeper into it
                         bool cancelledLookup = false;
@@ -261,7 +253,7 @@ namespace JeuDeLaVie
             lThread3 = new Thread(() => {
                 for (int oStart = cycleMemory2; oStart < cycleMemory75; oStart++)
                 {
-                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.CycleEmulateNew())
+                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.GetSwapTablesNew())
                     {
                         //if there's a match, looks deeper into it
                         bool cancelledLookup = false;
@@ -318,7 +310,7 @@ namespace JeuDeLaVie
             lThread4 = new Thread(() => {
                 for (int oStart = cycleMemory75; oStart < _cycleMemory; oStart++)
                 {
-                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.CycleEmulateNew())
+                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.GetSwapTablesNewB()] && oStart != ArrayGPS.GetSwapTablesNewB() && oStart != ArrayGPS.GetSwapTablesNew())
                     {
                         //if there's a match, looks deeper into it
                         bool cancelledLookup = false;
@@ -377,9 +369,6 @@ namespace JeuDeLaVie
             lThread3.Start();
             lThread4.Start();
 
-            //translate les tables utilises vers le haut
-            ArrayGPS.CycleAdd();
-
             cycleSummary = 0;
             //calcule le nombre de cellule adjascent
             //divide by 4 thread
@@ -392,23 +381,14 @@ namespace JeuDeLaVie
                     for (int x = 0; x < _tailleX; x++)
                     {
                         bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int cellSummary = 0, yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1;
-                        if (TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleYMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
+                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()];
                         //choice
                         if (AffichageChangement)
                         {
@@ -474,16 +454,23 @@ namespace JeuDeLaVie
                                 DonneeTables[nbYBackY + x] = Color.Black;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
                             }
-                            else if (cellSummary == 2 && (TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1))
+                            else if (TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
                             {
-                                cycleSummary++;
-                                cycleXRowSummary++;
-                                TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                if (cellSummary == 2)
+                                {
+                                    cycleSummary++;
+                                    cycleXRowSummary++;
+                                    DonneeTables[nbYBackY + x] = Color.Black;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                }
+                                else
+                                {
+                                    DonneeTables[nbYBackY + x] = Color.Transparent;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
+                                }
                             }
-                            else {
-                                DonneeTables[nbYBackY + x] = Color.Transparent;
+                            else
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
-                            }
                         }
                     }
                     cycleRowSummaries[ArrayGPS.GetSwapTablesNew(), y] = cycleXRowSummary;
@@ -501,23 +488,14 @@ namespace JeuDeLaVie
                     for (int x = 0; x < _tailleX; x++)
                     {
                         bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int cellSummary = 0, yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1;
-                        if (TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleYMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
+                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()];
                         //choice
                         if (AffichageChangement)
                         {
@@ -583,17 +561,23 @@ namespace JeuDeLaVie
                                 DonneeTables[nbYBackY + x] = Color.Black;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
                             }
-                            else if (cellSummary == 2 && TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
+                            else if (TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
                             {
-                                cycleSummary++;
-                                cycleXRowSummary++;
-                                TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                if (cellSummary == 2)
+                                {
+                                    cycleSummary++;
+                                    cycleXRowSummary++;
+                                    DonneeTables[nbYBackY + x] = Color.Black;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                }
+                                else
+                                {
+                                    DonneeTables[nbYBackY + x] = Color.Transparent;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
+                                }
                             }
                             else
-                            {
-                                DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
-                            }
                         }
                     }
                     cycleRowSummaries[ArrayGPS.GetSwapTablesNew(), y] = cycleXRowSummary;
@@ -611,23 +595,14 @@ namespace JeuDeLaVie
                     for (int x = 0; x < _tailleX; x++)
                     {
                         bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int cellSummary = 0, yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1;
-                        if (TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleYMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
+                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()];
                         //choice
                         if (AffichageChangement)
                         {
@@ -693,17 +668,23 @@ namespace JeuDeLaVie
                                 DonneeTables[nbYBackY + x] = Color.Black;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
                             }
-                            else if (cellSummary == 2 && TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
+                            else if (TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
                             {
-                                cycleSummary++;
-                                cycleXRowSummary++;
-                                TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                if (cellSummary == 2)
+                                {
+                                    cycleSummary++;
+                                    cycleXRowSummary++;
+                                    DonneeTables[nbYBackY + x] = Color.Black;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                }
+                                else
+                                {
+                                    DonneeTables[nbYBackY + x] = Color.Transparent;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
+                                }
                             }
                             else
-                            {
-                                DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
-                            }
                         }
                     }
                     cycleRowSummaries[ArrayGPS.GetSwapTablesNew(), y] = cycleXRowSummary;
@@ -721,23 +702,14 @@ namespace JeuDeLaVie
                     for (int x = 0; x < _tailleX; x++)
                     {
                         bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int cellSummary = 0, yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1;
-                        if (TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleYMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
-                        if (TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()] == 1)
-                            cellSummary++;
+                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleYMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleXMinus : yMinus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.GetSwapTablesOld()] +
+                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.GetSwapTablesOld()];
                         //choice
                         if (AffichageChangement)
                         {
@@ -803,17 +775,23 @@ namespace JeuDeLaVie
                                 DonneeTables[nbYBackY + x] = Color.Black;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
                             }
-                            else if (cellSummary == 2 && TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
+                            else if (TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesOld()] == 1)
                             {
-                                cycleSummary++;
-                                cycleXRowSummary++;
-                                TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                if (cellSummary == 2)
+                                {
+                                    cycleSummary++;
+                                    cycleXRowSummary++;
+                                    DonneeTables[nbYBackY + x] = Color.Black;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 1;
+                                }
+                                else
+                                {
+                                    DonneeTables[nbYBackY + x] = Color.Transparent;
+                                    TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
+                                }
                             }
                             else
-                            {
-                                DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.GetSwapTablesNew()] = 0;
-                            }
                         }
                     }
                     cycleRowSummaries[ArrayGPS.GetSwapTablesNew(), y] = cycleXRowSummary;

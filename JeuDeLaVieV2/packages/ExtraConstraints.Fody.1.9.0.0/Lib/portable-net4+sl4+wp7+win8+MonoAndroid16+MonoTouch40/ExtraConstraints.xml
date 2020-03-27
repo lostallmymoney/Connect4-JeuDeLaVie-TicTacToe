@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExtraConstraints</name>
+    </assembly>
+    <members>
+        <member name="T:ExtraConstraints.DelegateConstraintAttribute">
+            <summary>
+            Adds an <see cref="T:System.Delegate"/> constraint to a <see cref="F:System.AttributeTargets.GenericParameter"/>.
+            </summary>
+        </member>
+        <member name="M:ExtraConstraints.DelegateConstraintAttribute.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:ExtraConstraints.DelegateConstraintAttribute.#ctor(System.Type)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/> representing the type of delegate to constrain the generic parameter to.</param>
+        </member>
+        <member name="T:ExtraConstraints.EnumConstraintAttribute">
+            <summary>
+            Adds an <see cref="T:System.Enum"/> constraint to a <see cref="F:System.AttributeTargets.GenericParameter"/>.
+            </summary>
+        </member>
+        <member name="M:ExtraConstraints.EnumConstraintAttribute.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:ExtraConstraints.EnumConstraintAttribute.#ctor(System.Type)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/> representing the type of enum to constrain the generic parameter to</param>.
+        </member>
+    </members>
+</doc>

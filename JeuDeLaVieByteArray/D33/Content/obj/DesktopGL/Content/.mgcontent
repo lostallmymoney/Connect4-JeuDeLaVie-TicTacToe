@@ -4,8 +4,8 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>F:/2/22/JeuDeLaVie - Copy/D33/Content/Textures/minus.png</File>
-    <File>F:/2/22/JeuDeLaVie - Copy/D33/Content/Textures/plus.png</File>
+    <File>F:/2/22/JeuDeLaVieByteArray/D33/Content/Textures/minus.png</File>
+    <File>F:/2/22/JeuDeLaVieByteArray/D33/Content/Textures/plus.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
