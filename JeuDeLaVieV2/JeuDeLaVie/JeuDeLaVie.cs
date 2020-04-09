@@ -136,6 +136,8 @@ namespace JeuDeLaVie
 
             if (value == 1)
                 DonneeTables[nbYBackY + x] = Color.Black;
+            else if(value == 2)
+                DonneeTables[nbYBackY + x] = Color.Yellow;
             else
                 DonneeTables[nbYBackY + x] = Color.Transparent;
         }

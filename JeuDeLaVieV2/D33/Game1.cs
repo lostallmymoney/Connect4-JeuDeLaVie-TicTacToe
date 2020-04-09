@@ -10,7 +10,7 @@ namespace D22
 {
     public class Game1 : Game
     {
-        protected internal int staleWaitTime = 500, windowSizeX = 350, windowSizeY = 350;
+        protected internal int staleWaitTime = 500, windowSizeX = 700, windowSizeY = 700;
         private static Texture2D plusButtonTexture, minusButtonTexture;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -272,9 +272,9 @@ namespace D22
                         {
                             for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
                             {
-                                if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) == 1)
+                                if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) > 0)
                                 {
-                                    JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2);
+                                    JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2, (byte)selectedStructure.getValue(arrowDirection, x, y, structureFlipped));
                                 }
                             }
                         }
@@ -292,7 +292,6 @@ namespace D22
             spriteBatch.Draw(tableTexture, new Vector2(0, 0));
             if (sideMenuEtMouseFollowUp)
             {
-                bool statePressed = newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released && this.IsActive;
                 if (statePressed)
                 {
                     bool foundSomething = false;
@@ -319,22 +318,7 @@ namespace D22
                     }
                 }
 
-                if (selectedStructure != null && newState.X >= 0 && newState.X < windowSizeX && newState.Y >= 0 && newState.Y < windowSizeY) { 
-                    if (statePressed)
-                    {
-                        if (newState.X < windowSizeX && newState.Y < windowSizeY)
-                        {
-                            for (int y = 0; y < selectedStructure.getHeight(arrowDirection); y++)
-                            {
-                                for (int x = 0; x < selectedStructure.getWidth(arrowDirection); x++)
-                                {
-                                    if (selectedStructure.getValue(arrowDirection, x, y, structureFlipped) > 0)
-                                        JeuDeLaVieTable.setLife(x + newState.X - selectedStructure.getWidth(arrowDirection) / 2, y + newState.Y - selectedStructure.getHeight(arrowDirection) / 2, selectedStructure.getValue(arrowDirection, x, y, structureFlipped) ?? 0);
-                                }
-                            }
-                            JeuDeLaVieTable.generateImage();
-                        }
-                    }
+                if (structureHover) {
                     spriteBatch.Draw(structureTexture, new Vector2(newState.X - selectedStructure.getWidth(arrowDirection) / 2, newState.Y - selectedStructure.getHeight(arrowDirection) / 2));
                 }
 

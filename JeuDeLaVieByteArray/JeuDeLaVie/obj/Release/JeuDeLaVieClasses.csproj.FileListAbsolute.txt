@@ -97,4 +97,3 @@ F:\2\22\JeuDeLaVieByteArray\JeuDeLaVie\obj\Release\JeuDeLaVieClasses.csproj.Core
 F:\2\22\JeuDeLaVieByteArray\JeuDeLaVie\obj\Release\JeuDeLaVieClasses.csproj.CopyComplete
 F:\2\22\JeuDeLaVieByteArray\JeuDeLaVie\obj\Release\JeuDeLaVie.dll
 F:\2\22\JeuDeLaVieByteArray\JeuDeLaVie\obj\Release\JeuDeLaVie.pdb
-F:\2\22\JeuDeLaVieByteArray\JeuDeLaVie\obj\Release\JeuDeLaVieClasses.csprojAssemblyReference.cache

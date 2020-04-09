@@ -10,7 +10,7 @@ namespace D22
 {
     public class Game1 : Game
     {
-        protected internal int staleWaitTime = 500, windowSizeX = 350, windowSizeY = 350;
+        protected internal int staleWaitTime = 500, windowSizeX = 1800, windowSizeY = 960;
         private static Texture2D plusButtonTexture, minusButtonTexture;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;

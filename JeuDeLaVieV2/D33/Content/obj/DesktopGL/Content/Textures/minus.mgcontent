@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>F:/2/22/JeuDeLaVieByteArray - Copy/D33/Content/Textures/minus.png</SourceFile>
+  <SourceFile>F:/2/22/JeuDeLaVieV2/D33/Content/Textures/minus.png</SourceFile>
   <SourceTime>2020-03-24T01:41:43-04:00</SourceTime>
-  <DestFile>F:/2/22/JeuDeLaVieByteArray - Copy/D33/Content/bin/DesktopGL/Content/Textures/minus.xnb</DestFile>
-  <DestTime>2020-03-25T12:39:30.5288886-04:00</DestTime>
+  <DestFile>F:/2/22/JeuDeLaVieV2/D33/Content/bin/DesktopGL/Content/Textures/minus.xnb</DestFile>
+  <DestTime>2020-03-26T21:19:14.8860437-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2018-12-08T11:35:54-05:00</ImporterTime>
   <Processor>TextureProcessor</Processor>
