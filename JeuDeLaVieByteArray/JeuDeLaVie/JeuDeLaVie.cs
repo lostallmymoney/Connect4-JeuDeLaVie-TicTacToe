@@ -112,14 +112,12 @@ namespace JeuDeLaVie
 
         public static void setLife(int x, int y, byte value = 1)
         {
-            int rX = x < 0 ? _tailleX + x : (x >= _tailleX ? x - _tailleX : x), rY = y < 0 ? _tailleY + y : (y >= _tailleY ? y - _tailleY : y),
-                nbYBackY = y * _tailleX;
+            int rX = x < 0 ? _tailleX + x : (x >= _tailleX ? x - _tailleX : x),
+                rY = y < 0 ? _tailleY + y : (y >= _tailleY ? y - _tailleY : y);
             TableauDeLaVie[rX, rY, ArrayGPS.GetSwapTablesNew()] = value;
 
             if (value == 1)
-                DonneeTables[nbYBackY + x] = Color.Black;
-            else
-                DonneeTables[nbYBackY + x] = Color.Transparent;
+                DonneeTables[rY * _tailleX + x] = Color.Black;
         }
 
         public static void CalculerCycle()
