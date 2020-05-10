@@ -5,37 +5,26 @@ namespace JeuDeLaVie
 {
     public static class ArrayGPS
     {
-        private static int swapTablesNew = 1, swapTablesOld = 0, swapTablesNewB = 1,cMem, cMemAncient;
+        private static int cMem, cMemAncient;
         private static int[] ancientMemPyramid;
         private static bool[] ancientMemPyramidBool;
 
+        public static int SwapTablesNew { get; private set; } = 1;
+        public static int SwapTablesOld { get; private set; } = 0;
+        public static int SwapTablesNewB { get; private set; } = 1;
+
         public static void BackupTablesNumbers()
         {
-            swapTablesNewB = swapTablesNew;
-        }
-
-        public static int GetSwapTablesNew()
-        {
-            return swapTablesNew;
-        }
-
-        public static int GetSwapTablesOld()
-        {
-            return swapTablesOld;
-        }
-
-        public static int GetSwapTablesNewB()
-        {
-            return swapTablesNewB;
+            SwapTablesNewB = SwapTablesNew;
         }
 
         public static void CycleAdd()
         {
-            swapTablesOld = swapTablesNew;
+            SwapTablesOld = SwapTablesNew;
             do
             {
-                swapTablesNew = (swapTablesNew >= cMem - 1) ? 0 : swapTablesNew + 1;
-            } while (ancientMemPyramid.Contains(swapTablesNew));
+                SwapTablesNew = (SwapTablesNew >= cMem - 1) ? 0 : SwapTablesNew + 1;
+            } while (ancientMemPyramid.Contains(SwapTablesNew));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,12 +33,12 @@ namespace JeuDeLaVie
             if (ancientMemPyramidBool[0])
             {
                 pushAncient(ancientMemPyramid[0], 1);
-                ancientMemPyramid[0] = swapTablesNewB;
+                ancientMemPyramid[0] = SwapTablesNewB;
                 ancientMemPyramidBool[0] = false;
             }
             else
             {
-                ancientMemPyramid[0] = swapTablesNewB;
+                ancientMemPyramid[0] = SwapTablesNewB;
                 ancientMemPyramidBool[0] = true;
             }
         }
@@ -76,8 +65,8 @@ namespace JeuDeLaVie
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CycleReset(int cycleMemory, int nbAncient)
         {
-            swapTablesNew = 1;
-            swapTablesOld = 0;
+            SwapTablesNew = 1;
+            SwapTablesOld = 0;
             BackupTablesNumbers();
             cMemAncient = nbAncient;
             cMem = cycleMemory;
@@ -90,11 +79,10 @@ namespace JeuDeLaVie
             }
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CycleEmulateNew()
         {
-            int r = swapTablesNewB;
+            int r = SwapTablesNewB;
             do {
                 r = (r >= cMem - 1) ? 0 : r + 1;
             } while (ancientMemPyramid.Contains((r >= cMem - 1) ? 0 : r + 1)) ;

@@ -1,8 +1,0 @@
-C:\Users\c\source\repos\TicTacToe\TicTacClass\bin\Debug\TicTacClass.dll
-C:\Users\c\source\repos\TicTacToe\TicTacClass\bin\Debug\TicTacClass.pdb
-C:\Users\c\source\repos\TicTacToe\TicTacClass\obj\Debug\TicTacClass.csprojAssemblyReference.cache
-C:\Users\c\source\repos\TicTacToe\TicTacClass\obj\Debug\TicTacClass.dll
-C:\Users\c\source\repos\TicTacToe\TicTacClass\obj\Debug\TicTacClass.pdb
-F:\2\TicTacToe\TicTacClass\obj\Debug\TicTacClass.csprojAssemblyReference.cache
-F:\2\TicTacToe\TicTacClass\obj\Debug\TicTacClass.dll
-F:\2\TicTacToe\TicTacClass\obj\Debug\TicTacClass.pdb
