@@ -50,10 +50,13 @@
   <ItemGroup>
     <Compile Include="ArrayGPS.cs" />
     <Compile Include="FPSCounter.cs" />
+    <Compile Include="Interfaces\IVessel.cs" />
     <Compile Include="JeuDeLaVie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StructureManager.cs" />
     <Compile Include="StructureTemplate.cs" />
+    <Compile Include="StructureTemplateNature.cs" />
+    <Compile Include="Vessel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
