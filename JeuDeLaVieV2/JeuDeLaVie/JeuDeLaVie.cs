@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace JeuDeLaVie
 {
-    public class JeuDeLaVieTable
+    public unsafe class JeuDeLaVieTable
     {
         private static int _tailleX, _tailleY, _cycleMemory, _cycleStateAncient = 0, cycleSummary = 0, _memoryDistance, tailleY4, tailleY2, tailleY75, tailleY4X, tailleY2X, tailleY75X, tailleYMinus, tailleXMinus;
         private static int[] cycleSummaries;
@@ -17,26 +17,24 @@ namespace JeuDeLaVie
         private static StructureManager StructureMgr;
         private static int cycleMemory25, cycleMemory50, cycleMemory75;
         private static byte[,,] TableauDeLaVie;
-        private static int[,,] cycleMapTable;
+        private static int[][][] cycleMapTable1;
         //cmaptable MAP
         //1 == TOP LEFT corner X
-        //2 == TOP LEFT corner Y
-        //3 == TOP X
-        //4 == TOP Y
-        //5 == TOP RIGHT X
-        //6 == TOP RIGHT Y
-        //7 == LEFT X
-        //8 == LEFT Y
-        //9 == RIGHT X
-        //10 == RIGHT Y
-        //11 == BOT LEFT X
-        //12 == BOT LEFT Y
-        //13 == BOT X
-        //14 == BOT Y
-        //15 == BOT RIGHT X
-        //16 == BOT RIGHT Y
-        //17 EXTRA DATA
-        //18 EXTRA DATA
+        //1 == TOP LEFT corner Y
+        //2== TOP X
+        //2== TOP Y
+        //3== TOP RIGHT X
+        //3== TOP RIGHT Y
+        //4== LEFT X
+        //4== LEFT Y
+        //5== RIGHT X
+        //5== RIGHT Y
+        //6== BOT LEFT X
+        //6== BOT LEFT Y
+        //7== BOT X
+        //7== BOT Y
+        //8 == BOT RIGHT X
+        //8 == BOT RIGHT Y
 
         public static Color[] DonneeTables { get; private set; }
         public static bool Stale { get; private set; } = false;
@@ -49,7 +47,7 @@ namespace JeuDeLaVie
             generateur = new Random();
         }
 
-        public static void GenerateNew(GraphicsDevice graphicDevice, int memoryDistance = 1000, int nbAncientSummaries = 9, bool affichageChangement = false, double probabilite = 0.02, int tailleX = 800, int tailleY = 600, bool staleProof = false)
+        public static unsafe void GenerateNew(GraphicsDevice graphicDevice, int memoryDistance = 1000, int nbAncientSummaries = 9, bool affichageChangement = false, double probabilite = 0.02, int tailleX = 800, int tailleY = 600, bool staleProof = false)
         {
             if (nbAncientSummaries < 1)
                 nbAncientSummaries = 1;
@@ -58,7 +56,7 @@ namespace JeuDeLaVie
             ArrayGPS.CycleReset(nbAncientSummaries + 2, nbAncientSummaries);
             AffichageChangement = affichageChangement;
             TableauDeLaVie = new byte[tailleX, tailleY, nbAncientSummaries + 2];
-            cycleMapTable = new int[tailleX, tailleY, 18];
+            cycleMapTable1 = new int[tailleY][][];
             cycleSummaries = new int[nbAncientSummaries + 2];
             cycleRowSummaries = new int[nbAncientSummaries + 2, tailleY];
             _tailleX = tailleX;
@@ -86,47 +84,19 @@ namespace JeuDeLaVie
             //instancie le tableau de valeurs
             for (int y = 0; y < tailleY; y++)
             {
+                cycleMapTable1[y] = new int[tailleX][];
                 for (int x = 0; x < tailleX; x++)
                 {
 
                     bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
                     int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1;
 
-                    //cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                        //TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                        //TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                        //TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld], ArrayGPS.SwapTablesOld] +
-                        //TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                        //TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld];// +
-                        //TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.SwapTablesOld];// +
-                        //TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.SwapTablesOld];
+                    cycleMapTable1[y][x] = new int[4];
 
-                    cycleMapTable[x, y, 0] = xZero ? tailleXMinus : xMinus;
-                    cycleMapTable[x, y, 1] = yZero ? tailleYMinus : yMinus;
-
-                    cycleMapTable[x, y, 2] = x; //useless
-                    cycleMapTable[x, y, 3] = yMax ? 0 : yPlus;
-
-                    cycleMapTable[x, y, 4] = xMax ? 0 : xPlus;
-                    cycleMapTable[x, y, 5] = yZero ? tailleYMinus : yMinus;
-
-                    cycleMapTable[x, y, 6] = xZero ? tailleXMinus : xMinus;
-                    cycleMapTable[x, y, 7] = y; //useless
-
-                    cycleMapTable[x, y, 8] = xZero ? tailleXMinus : xMinus;
-                    cycleMapTable[x, y, 9] = y; //useless
-
-                    cycleMapTable[x, y, 10] = xZero ? tailleXMinus : xMinus;
-                    cycleMapTable[x, y, 11] = yMax ? 0 : yPlus;
-
-                    cycleMapTable[x, y, 12] = x; //useless
-                    cycleMapTable[x, y, 13] = yMax ? 0 : yPlus;
-
-                    cycleMapTable[x, y, 14] = xMax ? 0 : xPlus;
-                    cycleMapTable[x, y, 15] = yMax ? 0 : yPlus;
-
-                    cycleMapTable[x, y, 16] = 1;
-                    cycleMapTable[x, y, 17] = 1;
+                    cycleMapTable1[y][x][0] = xZero ? tailleXMinus : xMinus;
+                    cycleMapTable1[y][x][1] = yZero ? tailleYMinus : yMinus;
+                    cycleMapTable1[y][x][2] = xMax ? 0 : xPlus;
+                    cycleMapTable1[y][x][3] = yMax ? 0 : yPlus;
 
                     if (structureNature)
                     {
@@ -168,6 +138,7 @@ namespace JeuDeLaVie
                     }
                 }
             }
+
             //crée une copie initiale pour pas que l'affichage initial crée un erreur
             ArrayGPS.BackupTablesNumbers();
             generateImage();
@@ -225,18 +196,20 @@ namespace JeuDeLaVie
             {
                 for (int y = 0, nbYBackY = 0; y < tailleY4; y++, nbYBackY += _tailleX)
                 {
+                    int[][] tempTableY = cycleMapTable1[y];
                     int cycleXRowSummary = 0;
                     for (int x = 0; x < _tailleX; x++)
                     {
-                        bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.SwapTablesOld];
+                        int[] tempTableX = tempTableY[x];
+                        int cellSummary = TableauDeLaVie[tempTableX[0], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
+
                         //choice                            
 
                         //black
@@ -363,18 +336,19 @@ namespace JeuDeLaVie
             {
                 for (int y = tailleY4, nbYBackY = tailleY4X; y < tailleY2; y++, nbYBackY += _tailleX)
                 {
+                    int[][] tempTableY = cycleMapTable1[y];
                     int cycleXRowSummary = 0;
                     for (int x = 0; x < _tailleX; x++)
                     {
-                        bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.SwapTablesOld];
+                        int[] tempTableX = tempTableY[x];
+                        int cellSummary = TableauDeLaVie[tempTableX[0], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
                         //choice                            
 
                         //black
@@ -501,18 +475,19 @@ namespace JeuDeLaVie
             {
                 for (int y = tailleY2, nbYBackY = tailleY2X; y < tailleY75; y++, nbYBackY += _tailleX)
                 {
+                    int[][] tempTableY = cycleMapTable1[y];
                     int cycleXRowSummary = 0;
                     for (int x = 0; x < _tailleX; x++)
                     {
-                        bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.SwapTablesOld];
+                        int[] tempTableX = tempTableY[x];
+                        int cellSummary = TableauDeLaVie[tempTableX[0], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
                         //choice
 
                         //black
@@ -639,18 +614,19 @@ namespace JeuDeLaVie
             {
                 for (int y = tailleY75, nbYBackY = tailleY75X; y < _tailleY; y++, nbYBackY += _tailleX)
                 {
+                    int[][] tempTableY = cycleMapTable1[y];
                     int cycleXRowSummary = 0;
                     for (int x = 0; x < _tailleX; x++)
                     {
-                        bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
-                        int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1, cellSummary = TableauDeLaVie[x, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yZero ? tailleYMinus : yMinus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[x, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, yMax ? 0 : yPlus, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xZero ? tailleXMinus : xMinus, y, ArrayGPS.SwapTablesOld] +
-                            TableauDeLaVie[xMax ? 0 : xPlus, y, ArrayGPS.SwapTablesOld];
+                        int[] tempTableX = tempTableY[x];
+                        int cellSummary = TableauDeLaVie[tempTableX[0], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[1], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
                         //choice
 
                         //black
