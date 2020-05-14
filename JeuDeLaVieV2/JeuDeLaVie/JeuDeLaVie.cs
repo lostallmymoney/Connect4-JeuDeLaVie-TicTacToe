@@ -155,6 +155,8 @@ namespace JeuDeLaVie
                         DonneeTables[yByXtotal + x] = Color.Black;
                     if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] == 2)
                         DonneeTables[yByXtotal + x] = Color.Yellow;
+                    if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] == 63)
+                        DonneeTables[yByXtotal + x] = Color.Purple;
                 }
             }
         }
