@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
 namespace JeuDeLaVie
 {
-    public unsafe class JeuDeLaVieTable
+    public static class JeuDeLaVieTable
     {
         private static int _tailleX, _tailleY, _cycleMemory, _cycleStateAncient = 0, cycleSummary = 0, _memoryDistance, tailleY4, tailleY2, tailleY75, tailleY4X, tailleY2X, tailleY75X, tailleYMinus, tailleXMinus;
         private static int[] cycleSummaries;
@@ -18,36 +19,20 @@ namespace JeuDeLaVie
         private static int cycleMemory25, cycleMemory50, cycleMemory75;
         private static byte[,,] TableauDeLaVie;
         private static int[][][] cycleMapTable1;
-        //cmaptable MAP
-        //1 == TOP LEFT corner X
-        //1 == TOP LEFT corner Y
-        //2== TOP X
-        //2== TOP Y
-        //3== TOP RIGHT X
-        //3== TOP RIGHT Y
-        //4== LEFT X
-        //4== LEFT Y
-        //5== RIGHT X
-        //5== RIGHT Y
-        //6== BOT LEFT X
-        //6== BOT LEFT Y
-        //7== BOT X
-        //7== BOT Y
-        //8 == BOT RIGHT X
-        //8 == BOT RIGHT Y
+        private static int IndexStorageSwapNew = 4, IndexStorageSwapOld = 5;
 
         public static Color[] DonneeTables { get; private set; }
         public static bool Stale { get; private set; } = false;
         public static int StaleCycle { get; private set; } = 0;
         public static bool AffichageChangement { get; set; }
+        public static Color[] teamColors = { Color.Blue, Color.Red, Color.DarkBlue, Color.White};
 
         static JeuDeLaVieTable()
         {
             StructureMgr = new StructureManager();
             generateur = new Random();
         }
-
-        public static unsafe void GenerateNew(GraphicsDevice graphicDevice, int memoryDistance = 1000, int nbAncientSummaries = 9, bool affichageChangement = false, double probabilite = 0.02, int tailleX = 800, int tailleY = 600, bool staleProof = false)
+        public static void GenerateNew(GraphicsDevice graphicDevice, int memoryDistance = 1000, int nbAncientSummaries = 9, bool affichageChangement = false, double probabilite = 0.02, int tailleX = 800, int tailleY = 600, bool staleProof = false)
         {
             if (nbAncientSummaries < 1)
                 nbAncientSummaries = 1;
@@ -62,6 +47,7 @@ namespace JeuDeLaVie
             _tailleX = tailleX;
             _tailleY = tailleY;
             DonneeTables = new Color[_tailleX * _tailleY];
+
 
             //testcell threads maths
             tailleY4 = _tailleY / 4;
@@ -91,7 +77,7 @@ namespace JeuDeLaVie
                     bool yMax = y == tailleYMinus, xMax = x == tailleXMinus, yZero = y == 0, xZero = x == 0;
                     int yMinus = y - 1, yPlus = y + 1, xMinus = x - 1, xPlus = x + 1;
 
-                    cycleMapTable1[y][x] = new int[4];
+                    cycleMapTable1[y][x] = new int[6];
 
                     cycleMapTable1[y][x][0] = xZero ? tailleXMinus : xMinus;
                     cycleMapTable1[y][x][1] = yZero ? tailleYMinus : yMinus;
@@ -102,14 +88,14 @@ namespace JeuDeLaVie
                     {
                         bool r = (generateur.NextDouble() <= 0.5);
                         int direction = generateur.Next(0, 4);
-                        double selectedIndex = ((double)generateur.Next(0,100000))/100000, templatesSum = StructureMgr.StructureTemplatesNature.Sum(i => i.percentageChance);
+                        double selectedIndex = ((double)generateur.Next(0, 100000)) / 100000, templatesSum = StructureMgr.StructureTemplatesNature.Sum(i => i.percentageChance);
 
                         if (selectedIndex < templatesSum)
                         {
                             double summaryT = 0;
-                            StructureTemplateNature i=null;
+                            StructureTemplateNature i = null;
 
-                            for (int g=0; i == null && g < StructureMgr.StructureTemplatesNature.Count; g++)
+                            for (int g = 0; i == null && g < StructureMgr.StructureTemplatesNature.Count; g++)
                             {
                                 summaryT += StructureMgr.StructureTemplatesNature[g].percentageChance;
                                 if (summaryT > selectedIndex)
@@ -169,6 +155,10 @@ namespace JeuDeLaVie
             if (value == 253)
             {
                 TableauDeLaVie[rX, rY, ArrayGPS.SwapTablesNew] = 0;
+            }else if(value>=100 && value < 200)
+            {
+                cycleMapTable1[rY][rX][IndexStorageSwapNew] = value;
+                TableauDeLaVie[rX, rY, ArrayGPS.SwapTablesNew] = 255;
             }
             else
             {
@@ -182,6 +172,10 @@ namespace JeuDeLaVie
             ArrayGPS.BackupTablesNumbers();
             //translate les tables utilises vers le haut
             ArrayGPS.CycleAdd();
+
+            int tempSwap = IndexStorageSwapNew;
+            IndexStorageSwapNew = IndexStorageSwapOld;
+            IndexStorageSwapOld = tempSwap;
 
             _cycleStateAncient++;
             if (_cycleStateAncient == _memoryDistance)
@@ -210,17 +204,58 @@ namespace JeuDeLaVie
                                         TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
-                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld], cellSummary2 = cellSummary % 255 + cellSummary / 255;
 
                         //choice                            
 
                         //black
+                        Color c = Color.Black;
+                        byte intWeight = 1;
+                        if (tempTableX[IndexStorageSwapOld] > 0) { 
+                            if (tempTableX[IndexStorageSwapOld] >= 100 && tempTableX[IndexStorageSwapOld] < 200)
+                            {
+                                intWeight = 255;
+                                c = teamColors[tempTableX[IndexStorageSwapOld] - 100];
+                                tempTableX[IndexStorageSwapNew] = tempTableX[IndexStorageSwapOld];
+                            }
+                        }
+                        else if(cellSummary>256 && TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 0 && cellSummary2 < 4 )
+                        {
+                            int[] r = new int[] {
+                                cycleMapTable1[tempTableX[1]][tempTableX[0]][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[1]][x][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[1]][tempTableX[2]][IndexStorageSwapOld],
+                                cycleMapTable1[y][tempTableX[0]][IndexStorageSwapOld],
+                                cycleMapTable1[y][tempTableX[2]][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[3]][tempTableX[0]][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[3]][x][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[3]][tempTableX[2]][IndexStorageSwapOld]
+                                }.Where(i => i != 0).ToArray().GroupBy(e => e).OrderByDescending(grp => grp.Count())
+                                .Select(grp => grp.Key).ToArray();
+
+                            if (r.Count() == 1)
+                            {
+                                tempTableX[IndexStorageSwapNew] = r[0];
+                                intWeight = 255;
+                                cycleXRowSummary++;
+                                DonneeTables[nbYBackY + x] = c;
+                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                        else 
+                        { 
+                        cellSummary = cellSummary2;
                         if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 2)
                         {
                             if ((cellSummary >= 12 && cellSummary < 63) || cellSummary < 4)
                             {
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[IndexStorageSwapNew] = 0;
                             }
                             else
                             {
@@ -247,36 +282,40 @@ namespace JeuDeLaVie
                             if (cellSummary == 3)
                             {
                                 cycleXRowSummary++;
-                                DonneeTables[nbYBackY + x] = Color.Black;
-                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                DonneeTables[nbYBackY + x] = c;
+                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                             }
                             else if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] > 0)
                             {
                                 if (cellSummary == 2)
                                 {
                                     cycleXRowSummary++;
-                                    DonneeTables[nbYBackY + x] = Color.Black;
-                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                    DonneeTables[nbYBackY + x] = c;
+                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                                 }
                                 else
                                 {
                                     DonneeTables[nbYBackY + x] = Color.Transparent;
                                     TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                    tempTableX[IndexStorageSwapNew] = 0;
                                 }
                             }
                             else
                             {
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[IndexStorageSwapNew] = 0;
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                             }
                         }
                     }
+                }
                     cycleSummary += cycleXRowSummary;
                     cycleRowSummaries[ArrayGPS.SwapTablesNew, y] = cycleXRowSummary;
                 }
+                               
 
                 //checkout
-                for (int oStart = 0; oStart < cycleMemory25; oStart++)
+                for (int oStart = cycleMemory50; oStart < cycleMemory75; oStart++)
                 {
                     if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.SwapTablesNewB] && oStart != ArrayGPS.SwapTablesNewB && oStart != ArrayGPS.SwapTablesNew)
                     {
@@ -350,16 +389,54 @@ namespace JeuDeLaVie
                                         TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
-                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld], cellSummary2 = cellSummary % 255 + cellSummary / 255;
                         //choice                            
 
                         //black
+                        Color c = Color.Black;
+                        byte intWeight = 1;
+                        if (tempTableX[4] > 0)
+                        {
+                            if (tempTableX[4] >= 100 && tempTableX[4] < 200)
+                            {
+                                intWeight = 255;
+                                c = teamColors[tempTableX[4] - 100];
+                            }
+                            else if (tempTableX[4] < 100)
+                            {
+                                tempTableX[4] += 99;
+                            }
+                        }
+                        else if (cellSummary > 255 && TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 0 && cellSummary2 < 4)
+                        {
+                            int[] r = new int[] {
+                                cycleMapTable1[tempTableX[1]][tempTableX[0]][4],
+                                cycleMapTable1[tempTableX[1]][x][4],
+                                cycleMapTable1[tempTableX[1]][tempTableX[2]][4],
+                                cycleMapTable1[y][tempTableX[0]][4],
+                                cycleMapTable1[y][tempTableX[2]][4],
+                                cycleMapTable1[tempTableX[3]][tempTableX[0]][4],
+                                cycleMapTable1[tempTableX[3]][x][4],
+                                cycleMapTable1[tempTableX[3]][tempTableX[2]][4]
+                                }.Where(i => i != 0).ToArray().GroupBy(e => e).OrderByDescending(grp => grp.Count())
+                                .Select(grp => grp.Key).ToArray();
+
+                            if (r.Count() == 1)
+                            {
+                                tempTableX[4] = r[0];
+                                intWeight = 255;
+                            }
+                        }
+
+                        cellSummary = cellSummary2;
+
                         if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 2)
                         {
                             if ((cellSummary >= 12 && cellSummary < 63) || cellSummary < 4)
                             {
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[4] = 0;
                             }
                             else
                             {
@@ -386,26 +463,28 @@ namespace JeuDeLaVie
                             if (cellSummary == 3)
                             {
                                 cycleXRowSummary++;
-                                DonneeTables[nbYBackY + x] = Color.Black;
-                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                DonneeTables[nbYBackY + x] = c;
+                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                             }
                             else if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] > 0)
                             {
                                 if (cellSummary == 2)
                                 {
                                     cycleXRowSummary++;
-                                    DonneeTables[nbYBackY + x] = Color.Black;
-                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                    DonneeTables[nbYBackY + x] = c;
+                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                                 }
                                 else
                                 {
                                     DonneeTables[nbYBackY + x] = Color.Transparent;
                                     TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                    tempTableX[4] = 0;
                                 }
                             }
                             else
                             {
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[4] = 0;
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                             }
                         }
@@ -413,7 +492,6 @@ namespace JeuDeLaVie
                     cycleSummary += cycleXRowSummary;
                     cycleRowSummaries[ArrayGPS.SwapTablesNew, y] = cycleXRowSummary;
                 }
-                
 
                 //checkout
                 for (int oStart = cycleMemory25; oStart < cycleMemory50; oStart++)
@@ -489,16 +567,54 @@ namespace JeuDeLaVie
                                         TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
-                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld], cellSummary2 = cellSummary % 255 + cellSummary / 255;
                         //choice
 
                         //black
+                        Color c = Color.Black;
+                        byte intWeight = 1;
+                        if (tempTableX[4] > 0)
+                        {
+                            if (tempTableX[4] >= 100 && tempTableX[4] < 200)
+                            {
+                                intWeight = 255;
+                                c = teamColors[tempTableX[4] - 100];
+                            }
+                            else if (tempTableX[4] < 100)
+                            {
+                                tempTableX[4] += 99;
+                            }
+                        }
+                        else if (cellSummary > 255 && TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 0 && cellSummary2 < 4)
+                        {
+                            int[] r = new int[] {
+                                cycleMapTable1[tempTableX[1]][tempTableX[0]][4],
+                                cycleMapTable1[tempTableX[1]][x][4],
+                                cycleMapTable1[tempTableX[1]][tempTableX[2]][4],
+                                cycleMapTable1[y][tempTableX[0]][4],
+                                cycleMapTable1[y][tempTableX[2]][4],
+                                cycleMapTable1[tempTableX[3]][tempTableX[0]][4],
+                                cycleMapTable1[tempTableX[3]][x][4],
+                                cycleMapTable1[tempTableX[3]][tempTableX[2]][4]
+                                }.Where(i => i != 0).ToArray().GroupBy(e => e).OrderByDescending(grp => grp.Count())
+                                .Select(grp => grp.Key).ToArray();
+
+                            if (r.Count() == 1)
+                            {
+                                tempTableX[4] = r[0];
+                                intWeight = 255;
+                            }
+                        }
+
+                        cellSummary = cellSummary2;
+
                         if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 2)
                         {
-                            if ((cellSummary >= 12 && cellSummary<63) || cellSummary < 4)
+                            if ((cellSummary >= 12 && cellSummary < 63) || cellSummary < 4)
                             {
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[4] = 0;
                             }
                             else
                             {
@@ -525,26 +641,28 @@ namespace JeuDeLaVie
                             if (cellSummary == 3)
                             {
                                 cycleXRowSummary++;
-                                DonneeTables[nbYBackY + x] = Color.Black;
-                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                DonneeTables[nbYBackY + x] = c;
+                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                             }
                             else if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] > 0)
                             {
                                 if (cellSummary == 2)
                                 {
                                     cycleXRowSummary++;
-                                    DonneeTables[nbYBackY + x] = Color.Black;
-                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                    DonneeTables[nbYBackY + x] = c;
+                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                                 }
                                 else
                                 {
                                     DonneeTables[nbYBackY + x] = Color.Transparent;
                                     TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                    tempTableX[4] = 0;
                                 }
                             }
                             else
                             {
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[4] = 0;
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                             }
                         }
@@ -628,16 +746,54 @@ namespace JeuDeLaVie
                                         TableauDeLaVie[tempTableX[2], y, ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[tempTableX[0], tempTableX[3], ArrayGPS.SwapTablesOld] +
                                         TableauDeLaVie[x, tempTableX[3], ArrayGPS.SwapTablesOld] +
-                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld];
+                                        TableauDeLaVie[tempTableX[2], tempTableX[3], ArrayGPS.SwapTablesOld], cellSummary2 = cellSummary % 255 + cellSummary / 255;
                         //choice
 
                         //black
+                        Color c = Color.Black;
+                        byte intWeight = 1;
+                        if (tempTableX[4] > 0)
+                        {
+                            if (tempTableX[4] >= 100 && tempTableX[4] < 200)
+                            {
+                                intWeight = 255;
+                                c = teamColors[tempTableX[4] - 100];
+                            }
+                            else if (tempTableX[4] < 100)
+                            {
+                                tempTableX[4] += 99;
+                            }
+                        }
+                        else if (cellSummary > 255 && TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 0 && cellSummary2 < 4)
+                        {
+                            int[] r = new int[] {
+                                cycleMapTable1[tempTableX[1]][tempTableX[0]][4],
+                                cycleMapTable1[tempTableX[1]][x][4],
+                                cycleMapTable1[tempTableX[1]][tempTableX[2]][4],
+                                cycleMapTable1[y][tempTableX[0]][4],
+                                cycleMapTable1[y][tempTableX[2]][4],
+                                cycleMapTable1[tempTableX[3]][tempTableX[0]][4],
+                                cycleMapTable1[tempTableX[3]][x][4],
+                                cycleMapTable1[tempTableX[3]][tempTableX[2]][4]
+                                }.Where(i => i != 0).GroupBy(e => e).OrderByDescending(grp => grp.Count())
+                                .Select(grp => grp.Key).ToArray();
+
+                            if (r.Count() == 1)
+                            {
+                                tempTableX[4] = r[0];
+                                intWeight = 255;
+                            }
+                        }
+
+                        cellSummary = cellSummary2;
+
                         if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] == 2)
                         {
                             if ((cellSummary >= 12 && cellSummary < 63) || cellSummary < 4)
                             {
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[4] = 0;
                             }
                             else
                             {
@@ -664,26 +820,28 @@ namespace JeuDeLaVie
                             if (cellSummary == 3)
                             {
                                 cycleXRowSummary++;
-                                DonneeTables[nbYBackY + x] = Color.Black;
-                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                DonneeTables[nbYBackY + x] = c;
+                                TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                             }
                             else if (TableauDeLaVie[x, y, ArrayGPS.SwapTablesOld] > 0)
                             {
                                 if (cellSummary == 2)
                                 {
                                     cycleXRowSummary++;
-                                    DonneeTables[nbYBackY + x] = Color.Black;
-                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 1;
+                                    DonneeTables[nbYBackY + x] = c;
+                                    TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = intWeight;
                                 }
                                 else
                                 {
                                     DonneeTables[nbYBackY + x] = Color.Transparent;
                                     TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                    tempTableX[4] = 0;
                                 }
                             }
                             else
                             {
                                 TableauDeLaVie[x, y, ArrayGPS.SwapTablesNew] = 0;
+                                tempTableX[4] = 0;
                                 DonneeTables[nbYBackY + x] = Color.Transparent;
                             }
                         }
