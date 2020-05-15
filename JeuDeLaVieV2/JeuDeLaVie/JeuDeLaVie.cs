@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace JeuDeLaVie
@@ -11,11 +12,11 @@ namespace JeuDeLaVie
         private static int[] cycleSummaries;
         private static int[,] cycleRowSummaries;
         private static Random generateur;
-        private static bool structureNature = true;
+        private static bool structureNature = true, _verifyStale;
         private static StructureManager StructureMgr;
         private static byte[][,] TableauDeLaVie;
         private static int[][][] cycleMapTable1;
-        private static int IndexStorageSwapNew = 4, IndexStorageSwapOld = 5;
+        private static int IndexStorageSwapNew = 4, IndexStorageSwapNow = 5, IndexStorageSwapOld = 6;
         private static byte[,] tempTableauDeLaVieOld, tempTableauDeLaVieNew;
         private static int[][] threadYCords;
         private static Thread[] threadArrayTable;
@@ -31,8 +32,10 @@ namespace JeuDeLaVie
             StructureMgr = new StructureManager();
             generateur = new Random();
         }
-        public static void GenerateNew(int memoryDistance = 1000, int nbAncientSummaries = 9, bool affichageChangement = false, double probabilite = 0.02, int tailleX = 800, int tailleY = 600, bool staleProof = false)
+        public static void GenerateNew(int memoryDistance = 1000, int nbAncientSummaries = 9, bool affichageChangement = false, double probabilite = 0.02, int tailleX = 800, int tailleY = 600, bool staleProof = false, bool verifyStale = false)
         {
+            _verifyStale = verifyStale;
+
             if (nbAncientSummaries < 1)
                 nbAncientSummaries = 1;
             _memoryDistance = memoryDistance;
@@ -82,7 +85,7 @@ namespace JeuDeLaVie
                 cycleMapTable1[y] = new int[tailleX][];
                 for (int x = 0; x < tailleX; x++)
                 {
-                    cycleMapTable1[y][x] = new int[6];
+                    cycleMapTable1[y][x] = new int[7];
                 }
 
             }
@@ -173,6 +176,7 @@ namespace JeuDeLaVie
             }else if(value>=100 && value < 200)
             {
                 cycleMapTable1[rY][rX][IndexStorageSwapNew] = value;
+                cycleMapTable1[rY][rX][IndexStorageSwapNow] = value;
                 cycleMapTable1[rY][rX][IndexStorageSwapOld] = value;
                 TableauDeLaVie[ArrayGPS.SwapTablesNew][rX, rY] = 255;
             }
@@ -199,18 +203,12 @@ namespace JeuDeLaVie
                                     tempTableauDeLaVieOld[tempTableX[2], y] +
                                     tempTableauDeLaVieOld[tempTableX[0], tempTableX[3]] +
                                     tempTableauDeLaVieOld[x, tempTableX[3]] +
-                                    tempTableauDeLaVieOld[tempTableX[2], tempTableX[3]], cellSummary2 = cellSummary % 255 + cellSummary / 255;
+                                    tempTableauDeLaVieOld[tempTableX[2], tempTableX[3]], cellSummary2 = cellSummary % 255 + cellSummary / 255, oldTableL = tempTableauDeLaVieOld[x, y];
                     
                     //Choice
                     Color c = Color.Black;
                     byte intWeight = 1;
-                    if (tempTableX[IndexStorageSwapOld] >= 100 && tempTableX[IndexStorageSwapOld] < 200)
-                    {
-                        intWeight = 255;
-                        c = teamColors[tempTableX[IndexStorageSwapOld] - 100];
-                        tempTableX[IndexStorageSwapNew] = tempTableX[IndexStorageSwapOld];
-                    }
-                    int oldTableL = tempTableauDeLaVieOld[x, y];
+                    
                     if (oldTableL == 2)
                     {
                         if (cellSummary2 < 4 || (cellSummary2 >= 12 && cellSummary2 < 17))
@@ -235,19 +233,19 @@ namespace JeuDeLaVie
                     else
                     {
                         if (cellSummary2 == 3 || (cellSummary2 == 2 && oldTableL > 0))
-                        {
+                        {                            
                             if (cellSummary > 255)
                             {
                                 tZero = new int[8] {
-                                    cycleMapTable1[tempTableX[1]][tempTableX[0]][IndexStorageSwapOld],
-                                    cycleMapTable1[tempTableX[1]][x][IndexStorageSwapOld],
-                                    cycleMapTable1[tempTableX[1]][tempTableX[2]][IndexStorageSwapOld],
-                                    tempTableY[tempTableX[0]][IndexStorageSwapOld],
-                                    tempTableY[tempTableX[2]][IndexStorageSwapOld],
-                                    cycleMapTable1[tempTableX[3]][tempTableX[0]][IndexStorageSwapOld],
-                                    cycleMapTable1[tempTableX[3]][x][IndexStorageSwapOld],
-                                    cycleMapTable1[tempTableX[3]][tempTableX[2]][IndexStorageSwapOld]
-                                    };
+                                cycleMapTable1[tempTableX[1]][tempTableX[0]][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[1]][x][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[1]][tempTableX[2]][IndexStorageSwapOld],
+                                tempTableY[tempTableX[0]][IndexStorageSwapOld],
+                                tempTableY[tempTableX[2]][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[3]][tempTableX[0]][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[3]][x][IndexStorageSwapOld],
+                                cycleMapTable1[tempTableX[3]][tempTableX[2]][IndexStorageSwapOld]
+                                };
                                 tOne = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
                                 for (int k = 0; k < 8; k++)
                                 {
@@ -284,9 +282,16 @@ namespace JeuDeLaVie
                                 if (tOne[1] != tOne[0])
                                 {
                                     tempTableX[IndexStorageSwapNew] = tZero[0];
+                                    tempTableX[IndexStorageSwapNow] = tZero[0];
                                     intWeight = 255;
                                     c = teamColors[tZero[0] - 100];
-                                }
+                                }                              
+                            }
+                            else if(tempTableX[IndexStorageSwapNow] >= 100 && tempTableX[IndexStorageSwapNow] < 200)
+                            {
+                                intWeight = 255;
+                                c = teamColors[tempTableX[IndexStorageSwapNow] - 100];
+                                tempTableX[IndexStorageSwapNew] = tempTableX[IndexStorageSwapNow];
                             }
                             cycleXRowSummary++;
                             DonneeTables[nbYBackY + x] = c;
@@ -310,58 +315,60 @@ namespace JeuDeLaVie
                 cycleSummary += cycleXRowSummary;
                 cycleRowSummaries[ArrayGPS.SwapTablesNew, y] = cycleXRowSummary;
             }
-            
+
             //checkout
-            for (int oStart = intData[3]; oStart < intData[4]; oStart++)
-            {
-                if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.SwapTablesNewB] && oStart != ArrayGPS.SwapTablesNewB && oStart != ArrayGPS.SwapTablesNew)
+            if (!_verifyStale) {
+                for (int oStart = intData[3]; oStart < intData[4]; oStart++)
                 {
-                    //if there's a match, looks deeper into it
-                    bool cancelledLookup = false;
-
-                    for (int i = 0; i < _tailleY; i++)
+                    if (cycleSummaries[oStart] == cycleSummaries[ArrayGPS.SwapTablesNewB] && oStart != ArrayGPS.SwapTablesNewB && oStart != ArrayGPS.SwapTablesNew)
                     {
-                        if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.SwapTablesNewB, i])
-                        {
-                            cancelledLookup = true;
-                            break;
-                        }
-                    }
+                        //if there's a match, looks deeper into it
+                        bool cancelledLookup = false;
 
-                    if (!cancelledLookup)
-                    {
-                        byte[,] TableauDeLaVieoStart = TableauDeLaVie[oStart], TableauDeLaVieNewB = TableauDeLaVie[ArrayGPS.SwapTablesNewB];
-                        for (int y = 0; y < _tailleY; y++)
+                        for (int i = 0; i < _tailleY; i++)
                         {
-                            for (int x = 0; x < _tailleX; x++)
+                            if (cycleRowSummaries[oStart, i] != cycleRowSummaries[ArrayGPS.SwapTablesNewB, i])
                             {
-                                if (TableauDeLaVieNewB[x, y] != TableauDeLaVieoStart[x, y])
+                                cancelledLookup = true;
+                                break;
+                            }
+                        }
+
+                        if (!cancelledLookup)
+                        {
+                            byte[,] TableauDeLaVieoStart = TableauDeLaVie[oStart], TableauDeLaVieNewB = TableauDeLaVie[ArrayGPS.SwapTablesNewB];
+                            for (int y = 0; y < _tailleY; y++)
+                            {
+                                for (int x = 0; x < _tailleX; x++)
                                 {
-                                    cancelledLookup = true;
-                                    break;
+                                    if (TableauDeLaVieNewB[x, y] != TableauDeLaVieoStart[x, y])
+                                    {
+                                        cancelledLookup = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (cancelledLookup)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        Stale = true;
-                        StaleCycle = 0;
-                        int i = 0;
-                        for (int oToNew = oStart; oToNew != ArrayGPS.SwapTablesNewB; oToNew++, i++)
+                        if (cancelledLookup)
                         {
-                            if (oToNew == _cycleMemory - 1)
-                            {
-                                oToNew = -1;
-                            }
-                            i++;
+                            continue;
                         }
-                        StaleCycle = _memoryDistance * (2 ^ (i - 3)) + _cycleStateAncient;//bad calcul doing later
+                        else
+                        {
+                            Stale = true;
+                            StaleCycle = 0;
+                            int i = 0;
+                            for (int oToNew = oStart; oToNew != ArrayGPS.SwapTablesNewB; oToNew++, i++)
+                            {
+                                if (oToNew == _cycleMemory - 1)
+                                {
+                                    oToNew = -1;
+                                }
+                                i++;
+                            }
+                            StaleCycle = _memoryDistance * (2 ^ (i - 3)) + _cycleStateAncient;//bad calcul doing later
+                        }
                     }
                 }
             }
@@ -376,7 +383,8 @@ namespace JeuDeLaVie
 
             int tempSwap = IndexStorageSwapNew;
             IndexStorageSwapNew = IndexStorageSwapOld;
-            IndexStorageSwapOld = tempSwap;
+            IndexStorageSwapOld = IndexStorageSwapNow;
+            IndexStorageSwapNow = tempSwap;
 
             _cycleStateAncient++;
             if (_cycleStateAncient == _memoryDistance)
