@@ -1,4 +1,4 @@
 #!/bin/bash
 git add .
 git commit -m "upgrading"
-git push origin theplague
+git push origin master
