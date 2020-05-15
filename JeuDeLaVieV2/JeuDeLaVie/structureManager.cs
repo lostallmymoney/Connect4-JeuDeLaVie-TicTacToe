@@ -264,7 +264,9 @@ namespace JeuDeLaVie
             }
             , "B4"));
 
-            StructureTemplatesNature.Add(new StructureTemplateNature(StructureTemplates.Find(i=> i.Id=="B1"), 0.00001));
+            StructureTemplatesNature.Add(new StructureTemplateNature(StructureTemplates.Find(i => i.Id == "B2"), 0.00001));
+            StructureTemplatesNature.Add(new StructureTemplateNature(StructureTemplates.Find(i => i.Id == "B3"), 0.00001));
+            StructureTemplatesNature.Add(new StructureTemplateNature(StructureTemplates.Find(i => i.Id == "B4"), 0.00001));
 
             StructureTemplatesNature.Add(new StructureTemplateNature(StructureTemplates.Find(i => i.Id == "C3"), 0.00002));
 
