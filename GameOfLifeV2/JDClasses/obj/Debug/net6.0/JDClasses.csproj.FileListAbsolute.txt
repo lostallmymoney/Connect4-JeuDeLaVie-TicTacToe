@@ -1,0 +1,12 @@
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\bin\Debug\net6.0\JDClasses.deps.json
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\bin\Debug\net6.0\JDClasses.dll
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\bin\Debug\net6.0\JDClasses.pdb
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.csproj.AssemblyReference.cache
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.AssemblyInfoInputs.cache
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.AssemblyInfo.cs
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.csproj.CoreCompileInputs.cache
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.dll
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\refint\JDClasses.dll
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\JDClasses.pdb
+C:\Users\Cam\OneDrive\Bureau\GameOfLifeV2-master\JeuDeLaVieV2\JDClasses\obj\Debug\net6.0\ref\JDClasses.dll
