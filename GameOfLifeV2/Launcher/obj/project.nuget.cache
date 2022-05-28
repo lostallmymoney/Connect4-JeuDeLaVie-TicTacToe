@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "aAezqN4+bVnK2Ml71/egn+8SyB6ormvRNxY/PRiY1+xH7oIodVYfVwre/3tzN7Xku43QntS5nZabrviCVYXYfQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Cam\\OneDrive\\Bureau\\GameOfLifeV2-master\\JeuDeLaVieV2\\Launcher\\Launcher.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Cam\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.0.1641\\monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512"
+  ],
+  "logs": []
+}
